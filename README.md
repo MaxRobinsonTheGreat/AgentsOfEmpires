@@ -1,7 +1,7 @@
 This is a automatic game runner for Age of Empires 2: DE. **This runs via screen capture, it cannot run in the background.**
 
 > [!WARNING]
-> This repo is a mess, scrapped together to collect footage for a youtube video
+> This repo is a mess, scrapped together to collect footage for a youtube video. I uploaded it more or less as is. You'll have to hand this off to an agent to get it running for your purposes, they'll figure it out.
 
 Before running:
 - backup your AI folder
