@@ -1,0 +1,109 @@
+(defrule
+    (true)
+=>
+    (up-change-name "deep_fortress")
+)
+
+(load "strat_deep_fortress\Promisory\defaultConstants")
+(load "strat_deep_fortress\Promisory\finalingConstants")
+(load "strat_deep_fortress\Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "strat_deep_fortress\Promisory\init")
+(load "strat_deep_fortress\Promisory\threats")
+(load "strat_deep_fortress\Promisory\escrow")
+(load "strat_deep_fortress\Promisory\dawn")
+(load "strat_deep_fortress\Promisory\gatherers")
+(load "strat_deep_fortress\Promisory\scoutcontrol")
+(load "strat_deep_fortress\Promisory\tsa")
+(load "strat_deep_fortress\Promisory\watercontrol")
+(load "strat_deep_fortress\Promisory\general")
+(load "strat_deep_fortress\Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "strat_deep_fortress\Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "strat_deep_fortress\Promisory\researches")
+(load "strat_deep_fortress\Promisory\interaction")
+(load "strat_deep_fortress\Promisory\buildings")
+(load "strat_deep_fortress\Promisory\units")
+(load "strat_deep_fortress\Promisory\trade")
+(load "strat_deep_fortress\Promisory\resign")
+#else
+(load "strat_deep_fortress\Promisory\finaling")
+#end-if
+(load "strat_deep_fortress\Promisory\event")
+
+(defconst deep-fortress-loader-released 14994)
+(defconst deep-fortress-loader-intercept 14995)
+(defrule
+    (player-number scenario-player-1)
+=>
+    (set-strategic-number sn-target-player-number 2)
+    (set-strategic-number sn-focus-player-number 2)
+)
+(defrule
+    (player-number scenario-player-2)
+=>
+    (set-strategic-number sn-target-player-number 1)
+    (set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+    (true)
+=>
+    (set-goal deep-fortress-loader-released 0)
+    (set-goal deep-fortress-loader-intercept 0)
+    (enable-timer 50 2)
+    (disable-self)
+)
+(defrule
+    (game-time < 15)
+=>
+    (up-full-reset-search)
+    (up-find-local c: all-units-class c: 100)
+    (up-target-objects 0 action-stop -1 stance-stand-ground)
+)
+(defrule
+    (game-time >= 15)
+    (goal deep-fortress-loader-released 0)
+=>
+    (up-full-reset-search)
+    (up-find-local c: all-units-class c: 100)
+    (up-target-objects 0 action-stop -1 stance-aggressive)
+    (chat-to-player my-player-number "DEEP-FORTRESS: HOLD RELEASED")
+    (set-goal deep-fortress-loader-released 1)
+    (up-update-targets)
+)
+(defrule
+    (timer-triggered 50)
+    (game-time >= 15)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: cavalry-class c: 8)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: infantry-class c: 40)
+    (up-remove-objects search-local object-data-type == samurai)
+    (up-remove-objects search-local object-data-type == elite-samurai)
+    (up-target-objects 1 action-default formation-stagger stance-defensive)
+)
+(defrule
+    (timer-triggered 50)
+    (game-time >= 15)
+    (goal deep-fortress-loader-intercept 0)
+    (up-find-remote c: cavalry-class c: 1)
+=>
+    (chat-to-player my-player-number "DEEP-FORTRESS: PIKE INTERCEPT ACTIVE")
+    (set-goal deep-fortress-loader-intercept 1)
+)
+(defrule
+    (timer-triggered 50)
+=>
+    (enable-timer 50 2)
+)
+
+(include "ailib/Geometry.xs")

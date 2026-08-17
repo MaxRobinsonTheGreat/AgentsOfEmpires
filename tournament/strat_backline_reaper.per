@@ -1,0 +1,115 @@
+(defrule
+    (true)
+=>
+    (up-change-name "backline_reaper")
+)
+
+(load "strat_backline_reaper\Promisory\defaultConstants")
+(load "strat_backline_reaper\Promisory\finalingConstants")
+(load "strat_backline_reaper\Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "strat_backline_reaper\Promisory\init")
+(load "strat_backline_reaper\Promisory\threats")
+(load "strat_backline_reaper\Promisory\escrow")
+(load "strat_backline_reaper\Promisory\dawn")
+(load "strat_backline_reaper\Promisory\gatherers")
+(load "strat_backline_reaper\Promisory\scoutcontrol")
+(load "strat_backline_reaper\Promisory\tsa")
+(load "strat_backline_reaper\Promisory\watercontrol")
+(load "strat_backline_reaper\Promisory\general")
+(load "strat_backline_reaper\Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "strat_backline_reaper\Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "strat_backline_reaper\Promisory\researches")
+(load "strat_backline_reaper\Promisory\interaction")
+(load "strat_backline_reaper\Promisory\buildings")
+(load "strat_backline_reaper\Promisory\units")
+(load "strat_backline_reaper\Promisory\trade")
+(load "strat_backline_reaper\Promisory\resign")
+#else
+(load "strat_backline_reaper\Promisory\finaling")
+#end-if
+(load "strat_backline_reaper\Promisory\event")
+
+; backline_reaper: full Promisory + target fix + cavalry backline hunt.
+; up-find-remote only sees enemies sighted within the last 5 seconds, so a
+; single siege-onager search usually fails (deep_hunter's flaw). Instead we
+; accumulate ALL visible backline units (onager, scorpions, arbalests, skirms)
+; into one remote list, sort by distance, and dive 6 cavalry onto the nearest.
+(defconst reaper-ss-local-total 14980)
+(defconst reaper-ss-local-last 14981)
+(defconst reaper-ss-remote-total 14982)
+(defconst reaper-ss-remote-last 14983)
+(defconst reaper-m-dive 14991)
+(defconst reaper-loop-confirmed 14995)
+
+(defrule
+    (player-number scenario-player-1)
+=>
+    (set-strategic-number sn-target-player-number 2)
+    (set-strategic-number sn-focus-player-number 2)
+)
+(defrule
+    (player-number scenario-player-2)
+=>
+    (set-strategic-number sn-target-player-number 1)
+    (set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+    (true)
+=>
+    (set-goal reaper-ss-local-total 0)
+    (set-goal reaper-ss-local-last 0)
+    (set-goal reaper-ss-remote-total 0)
+    (set-goal reaper-ss-remote-last 0)
+    (set-goal reaper-m-dive 0)
+    (set-goal reaper-loop-confirmed 0)
+    (enable-timer 50 2)
+    (disable-self)
+)
+(defrule
+    (timer-triggered 50)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: siege-weapon-class c: 3)
+    (up-find-remote c: archery-class c: 24)
+    (up-get-search-state reaper-ss-local-total)
+)
+(defrule
+    (timer-triggered 50)
+    (goal reaper-loop-confirmed 0)
+=>
+    (chat-to-player my-player-number "REAPER: CONTROLLER ACTIVE")
+    (set-goal reaper-loop-confirmed 1)
+)
+(defrule
+    (timer-triggered 50)
+    (up-compare-goal reaper-ss-remote-total >= 1)
+=>
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 6)
+    (up-target-objects 1 action-default formation-stagger stance-aggressive)
+)
+(defrule
+    (timer-triggered 50)
+    (goal reaper-m-dive 0)
+    (up-compare-goal reaper-ss-remote-total >= 1)
+=>
+    (up-chat-data-to-player my-player-number "REAPER: DIVE ACTIVE, %d targets" g: reaper-ss-remote-total)
+    (set-goal reaper-m-dive 1)
+)
+(defrule
+    (timer-triggered 50)
+=>
+    (enable-timer 50 2)
+)
+
+(include "ailib/Geometry.xs")

@@ -1,0 +1,74 @@
+; strat_landsknecht.per - Promisory + Teutonic Knight / Siege Onager / Bombard Cannon deathball
+; ("landsknecht") Thesis: TKs melee-crush both knights AND pikes (promi-mix's core),
+; siege onagers delete trash/pike masses (extreme-ai's late comp), BBCs snipe
+; enemy mangonels before they splash the TK blob. Pike screen guards the siege,
+; monks convert knights and heal TKs. Promisory researches Ironclad + Elite TK itself.
+
+(defrule (true) => (up-change-name "landsknecht") (disable-self))
+
+; --- buildings ---
+(defrule (current-age >= castle-age) (building-type-count castle < 2) (can-build castle) => (build castle))
+(defrule (current-age >= castle-age) (building-type-count siege-workshop < 2) (can-build siege-workshop) => (build siege-workshop))
+(defrule (current-age >= castle-age) (building-type-count monastery < 1) (can-build monastery) => (build monastery))
+
+; --- army core ---
+(defrule (current-age >= castle-age) (unit-type-count-total teutonic-knight-line < 16) (can-train teutonic-knight-line) => (train teutonic-knight-line))
+(defrule (current-age >= castle-age) (unit-type-count-total spearman-line < 8) (can-train spearman-line) => (train spearman-line))
+(defrule (current-age >= castle-age) (unit-type-count-total mangonel-line < 5) (can-train mangonel-line) => (train mangonel-line))
+(defrule (current-age >= castle-age) (unit-type-count-total monk < 4) (can-train monk) => (train monk))
+(defrule (current-age == imperial-age) (unit-type-count-total bombard-cannon-line < 4) (can-train bombard-cannon-line) => (train bombard-cannon-line))
+
+; --- research priorities (blacksmith melee, TK speed/elite, siege chain, monk aid) ---
+(defrule (can-research ri-forging) => (research ri-forging))
+(defrule (can-research ri-iron-casting) => (research ri-iron-casting))
+(defrule (can-research ri-blast-furnace) => (research ri-blast-furnace))
+(defrule (can-research ri-scale-mail) => (research ri-scale-mail))
+(defrule (can-research ri-chain-mail) => (research ri-chain-mail))
+(defrule (can-research ri-plate-mail) => (research ri-plate-mail))
+(defrule (can-research ri-squires) => (research ri-squires))
+(defrule (can-research ri-elite-teutonic-knight) => (research ri-elite-teutonic-knight))
+(defrule (can-research ri-pikeman) => (research ri-pikeman))
+(defrule (can-research ri-halberdier) => (research ri-halberdier))
+(defrule (can-research ri-onager) => (research ri-onager))
+(defrule (can-research ri-siege-onager) => (research ri-siege-onager))
+(defrule (can-research ri-chemistry) => (research ri-chemistry))
+(defrule (can-research ri-siege-engineers) => (research ri-siege-engineers))
+(defrule (can-research ri-ballistics) => (research ri-ballistics))
+(defrule (can-research ri-sanctity) => (research ri-sanctity))
+(defrule (can-research ri-fervor) => (research ri-fervor))
+
+(load "Promisory\defaultConstants")
+(load "Promisory\finalingConstants")
+(load "Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "Promisory\init")
+(load "Promisory\threats")
+(load "Promisory\escrow")
+(load "Promisory\dawn")
+(load "Promisory\gatherers")
+(load "Promisory\scoutcontrol")
+(load "Promisory\tsa")
+(load "Promisory\watercontrol")
+(load "Promisory\general")
+(load "Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "Promisory\researches")
+(load "Promisory\interaction")
+(load "Promisory\buildings")
+(load "Promisory\units")
+(load "Promisory\trade")
+(load "Promisory\resign")
+#else
+(load "Promisory\finaling")
+#end-if
+(load "Promisory\event")
+
+(include "ailib/Geometry.xs")

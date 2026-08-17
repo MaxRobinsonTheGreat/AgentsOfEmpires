@@ -1,0 +1,324 @@
+(defrule; dyng 2
+(or	(and	(population < max-civ-pop)
+		(and	(up-compare-goal custom-civ-pop < up-max-civ)
+			(and	(civilian-population < up-max-civ)
+				(civilian-population < 16))))
+(or	(strategic-number sn-current-age < imperial)
+(or	(up-compare-goal strategy != usual)
+(or	(up-timer-status retask-timer != timer-triggered)
+	(building-type-count-total town-center <= 0)))))
+=>
+	(up-jump-rule 53))
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal 0)
+	(set-goal temporary-goal2 0)
+	(set-goal temporary-goal3 0)
+	(set-goal temporary-goal4 0)
+	(set-goal temporary-goal5 16)
+	(set-goal temporary-goal10 0)
+	(up-reset-cost-data cost-food))
+(defrule
+	(goal trainvillager yes)
+	(unit-available villager)
+	(building-type-count town-center >= 1)
+=>
+	(up-add-object-cost c: villager c: 1))
+(defrule
+	(goal trainflemish yes)
+	(unit-available flemish-militia)
+	(building-type-count town-center >= 1)
+=>
+	(up-add-object-cost c: flemish-militia c: 1))
+(defrule
+	(goal traincart yes)
+	(unit-available trade-cart)
+	(building-type-count market >= 1)
+=>
+	(up-add-object-cost c: trade-cart c: 1))
+(defrule
+	(goal trainmonk yes)
+	(unit-available monk)
+	(building-type-count monastery >= 1)
+=>
+	(up-add-object-cost c: monk c: 1)
+	(up-jump-rule 1))
+(defrule
+	(goal trainmonk yes)
+	(unit-available missionary)
+	(building-type-count monastery >= 1)
+=>
+	(up-add-object-cost c: missionary c: 1)); end mini jump
+(defrule
+	(building-type-count castle <= 0)
+=>
+	(up-jump-rule 3))
+(defrule
+	(goal traintrebuchet yes)
+	(unit-available trebuchet)
+=>
+	(up-add-object-cost c: trebuchet c: 1))
+(defrule
+	(goal trainpetard yes)
+	(unit-available petard)
+=>
+	(up-add-object-cost c: petard c: 1))
+(defrule
+	(goal trainunique yes)
+	(unit-available my-unique-unit-line)
+=>
+	(up-add-object-cost c: my-unique-unit-line c: 1)
+	(up-jump-rule 1)); end jump
+(defrule
+	(civ-selected bulgarians)
+	(building-type-count krepost >= 1)
+	(goal trainunique yes)
+	(unit-available my-unique-unit-line)
+=>
+	(up-add-object-cost c: my-unique-unit-line c: 1)); end mini jump
+(defrule
+	(building-type-count siege-workshop <= 0)
+=>
+	(up-jump-rule 5));4
+(defrule
+	(goal trainram yes)
+	(unit-available battering-ram-line)
+=>
+	(up-add-object-cost c: battering-ram-line c: 1))
+
+(defrule
+	(not(unit-available battering-ram-line))
+	(unit-available armored-elephant-line)
+	(goal trainram yes)
+=>
+	(up-add-object-cost c: armored-elephant-line c: 1)
+)
+
+(defrule
+	(goal trainmangonel yes)
+	(unit-available mangonel-line)
+=>
+	(up-add-object-cost c: mangonel-line c: 1))
+(defrule
+	(goal trainscorpion yes)
+	(unit-available scorpion-line)
+=>
+	(up-add-object-cost c: scorpion-line c: 1))
+(defrule
+	(goal trainbombard yes)
+	(unit-available bombard-cannon)
+=>
+	(up-add-object-cost c: bombard-cannon-line c: 1)); end jump
+(defrule
+	(building-type-count dock <= 0)
+=>
+	(up-jump-rule 10))
+(defrule
+	(goal traintransport yes)
+	(unit-available transport-ship)
+=>
+	(up-add-object-cost c: transport-ship c: 1))
+(defrule
+	(goal trainfish yes)
+	(unit-available fishing-ship)
+=>
+	(up-add-object-cost c: fishing-ship c: 1))
+(defrule
+	(goal traincog yes)
+	(unit-available trade-cog)
+=>
+	(up-add-object-cost c: trade-cog c: 1))
+(defrule
+	(goal traingalley yes)
+	(unit-available galley-line)
+=>
+	(up-add-object-cost c: galley-line c: 1))
+(defrule
+	(goal trainfire yes)
+	(unit-available fire-ship-line)
+=>
+	(up-add-object-cost c: fire-ship-line c: 1))
+(defrule
+	(goal traindemo yes)
+	(unit-available demolition-ship-line)
+=>
+	(up-add-object-cost c: demolition-ship-line c: 1))
+(defrule
+	(goal trainturtle yes)
+	(unit-available turtle-ship-line)
+=>
+	(up-add-object-cost c: turtle-ship-line c: 1))
+(defrule
+	(goal trainlongboat yes)
+	(unit-available longboat-line)
+=>
+	(up-add-object-cost c: longboat-line c: 1))
+(defrule
+	(goal traincaravel yes)
+	(unit-available caravel-line)
+=>
+	(up-add-object-cost c: caravel-line c: 1))
+(defrule
+	(goal traincannon yes)
+	(unit-available siege-ship)
+=>
+	(up-add-object-cost c: siege-ship c: 1)); end jump
+(defrule
+	(building-type-count barracks <= 0)
+=>
+	(up-jump-rule 5))
+(defrule
+	(goal trainchamp yes)
+	(unit-available militiaman-line)
+=>
+	(up-add-object-cost c: militiaman-line c: 1))
+(defrule
+	(goal trainpike yes)
+	(unit-available spearman-line)
+=>
+	(up-add-object-cost c: spearman-line c: 1))
+(defrule
+	(goal traineagle yes)
+	(unit-available eagle-warrior-line)
+=>
+	(up-add-object-cost c: eagle-warrior-line c: 1))
+(defrule
+	(goal traincondottiero yes)
+	(unit-available condottiero)
+=>
+	(up-add-object-cost c: condottiero c: 1))
+(defrule
+	(civ-selected gothic)
+	(building-type-count castle <= 0)
+	(goal trainunique yes)
+(or	(unit-available barracks-huskarl)
+	(unit-available elite-barracks-huskarl))
+=>
+	(up-add-object-cost c: my-unique-unit-line c: 1)); end jump
+(defrule
+	(building-type-count archery-range <= 0)
+=>
+	(up-jump-rule 6))
+(defrule
+	(goal trainarcher yes)
+	(unit-available archer-line)
+=>
+	(up-add-object-cost c: archer-line c: 1))
+(defrule
+	(goal trainskirm yes)
+(or	(unit-available skirmisher-line)
+	(unit-available imperial-skirmisher))
+=>
+	(up-add-object-cost c: skirmisher-line c: 1))
+(defrule
+	(goal trainhandcannon yes)
+	(unit-available hand-cannoneer)
+=>
+	(up-add-object-cost c: hand-cannoneer c: 1))
+(defrule
+	(goal traincavarcher yes)
+	(unit-available cavalry-archer-line)
+=>
+	(up-add-object-cost c: cavalry-archer-line c: 1))
+(defrule
+	(goal trainslinger yes)
+	(unit-available slinger)
+=>
+	(up-add-object-cost c: slinger c: 1))
+(defrule
+	(goal traingenitour yes)
+	(unit-available genitour-line)
+=>
+	(up-add-object-cost c: genitour-line c: 1)); end jump
+(defrule
+	(building-type-count stable <= 0)
+=>
+	(up-jump-rule 7))
+(defrule
+	(goal trainknight yes)
+	(unit-available knight-line)
+=>
+	(up-add-object-cost c: knight-line c: 1))
+(defrule
+	(goal traincamel yes)
+(or	(unit-available camel-line)
+	(unit-available imperial-camel))
+=>
+	(up-add-object-cost c: camel-line c: 1))
+(defrule
+	(goal trainhussar yes)
+	(unit-available scout-cavalry-line)
+=>
+	(up-add-object-cost c: scout-cavalry-line c: 1))
+(defrule
+	(goal trainbattle yes)
+	(unit-available battle-elephant-line)
+=>
+	(up-add-object-cost c: battle-elephant-line c: 1))
+(defrule
+	(goal trainsteppe yes)
+	(unit-available steppe-lancer-line)
+=>
+	(up-add-object-cost c: steppe-lancer-line c: 1))
+(defrule
+	(civ-selected hun)
+	(building-type-count castle <= 0)
+	(goal trainunique yes)
+(or	(unit-available stable-tarkan)
+	(unit-available elite-stable-tarkan))
+=>
+	(up-add-object-cost c: my-unique-unit-line c: 1)); end jump
+;1 additional rule
+(defrule
+	(civ-selected 42)
+	(or(goal trainknight yes)
+	(unit-type-count-total shrivamsha-rider-line > 1))
+	(nand(can-train shrivamsha-rider-line)
+	(up-pending-objects c: shrivamsha-rider-line < 1))
+=>
+	(up-add-object-cost c: shrivamsha-rider-line c: 1);end jump now
+)
+
+
+
+(defrule
+	(goal cost-wood 0)
+	(goal cost-food 0)
+	(goal cost-gold 0)
+=>
+	(set-goal temporary-goal5 20)
+	(up-jump-rule 3))
+(defrule; end neg jump
+	(true)
+=>
+;	(up-chat-data-to-self "w-cost: %d" g: cost-wood)
+;	(up-chat-data-to-self "f-cost: %d" g: cost-food)
+;	(up-chat-data-to-self "g-cost: %d" g: cost-gold)
+	(up-modify-goal cost-wood c:max 1)
+	(up-modify-goal cost-food c:max 1)
+	(up-modify-goal cost-gold c:max 1)
+	(up-modify-goal temporary-goal g:= cost-wood)
+	(up-modify-goal temporary-goal g:+ cost-food)
+	(up-modify-goal temporary-goal g:+ cost-gold))
+(defrule
+	(up-compare-goal temporary-goal != 400)
+;(or	(up-compare-goal temporary-goal <= 96)
+;	(up-compare-goal temporary-goal >= 104))
+	(up-compare-goal temporary-goal10 <= 0)
+=>
+	(up-modify-goal cost-wood c:* 400)
+	(up-modify-goal cost-wood g:z/ temporary-goal)
+	(up-modify-goal cost-food c:* 400)
+	(up-modify-goal cost-food g:z/ temporary-goal)
+	(up-modify-goal cost-gold c:* 400)
+	(up-modify-goal cost-gold g:z/ temporary-goal)
+	(up-modify-goal temporary-goal10 c:+ 1)
+	(up-jump-rule -2))
+(defrule
+	(true)
+=>
+	(up-modify-goal temporary-goal2 g:= cost-wood)
+	(up-modify-goal temporary-goal3 g:= cost-food)
+	(up-modify-goal temporary-goal4 g:= cost-gold)
+	(up-reset-cost-data cost-food)); end jump

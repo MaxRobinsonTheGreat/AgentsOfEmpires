@@ -1,0 +1,119 @@
+; strat_direct_counter.per - ground-up direct combat controller
+; No Promisory. Attack groups establish contact, then each unit group receives
+; an explicit counter-target every 2 seconds.
+
+(defconst search-order-asc 1)
+(defconst object-data-distance 44)
+
+(defrule
+    (true)
+=>
+    (up-change-name "direct-counter")
+    (set-strategic-number sn-number-attack-groups 20)
+    (set-strategic-number sn-minimum-attack-group-size 1)
+    (set-strategic-number sn-maximum-attack-group-size 100)
+    (set-strategic-number sn-percent-attack-soldiers 100)
+    (set-strategic-number sn-attack-intelligence 1)
+    (enable-timer 1 2)
+    (disable-self)
+)
+
+; Scenario-color targeting is deterministic even though harness slots randomize.
+(defrule
+    (player-number scenario-player-1)
+=>
+    (set-strategic-number sn-target-player-number 2)
+    (set-strategic-number sn-focus-player-number 2)
+)
+(defrule
+    (player-number scenario-player-2)
+=>
+    (set-strategic-number sn-target-player-number 1)
+    (set-strategic-number sn-focus-player-number 1)
+)
+
+; Run general engagement first. The class-specific DUC rules below execute later
+; in the pass, so their more precise orders take final authority.
+(defrule
+    (timer-triggered 1)
+=>
+    (attack-now)
+)
+
+; Mounted Samurai -> enemy Siege Onager.
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: siege-onager c: 1)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 8)
+    (up-target-objects 1 action-default formation-stagger stance-aggressive)
+)
+
+; Heavy Pikemen -> enemy Mounted Samurai. Filtering was measured at exactly 12.
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: cavalry-class c: 8)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: infantry-class c: 40)
+    (up-remove-objects search-local object-data-type == samurai)
+    (up-remove-objects search-local object-data-type == elite-samurai)
+    (up-target-objects 1 action-default formation-stagger stance-defensive)
+)
+
+; Elite Skirmishers -> Arbalests.
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: arbalest c: 12)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: elite-skirmisher c: 12)
+    (up-target-objects 1 action-default formation-line stance-stand-ground)
+)
+
+; Arbalests -> nearest enemy infantry.
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: infantry-class c: 40)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: arbalest c: 12)
+    (up-target-objects 1 action-default formation-line stance-stand-ground)
+)
+
+; Elite Samurai -> nearest enemy infantry.
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: infantry-class c: 40)
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: elite-samurai c: 16)
+    (up-target-objects 1 action-default formation-line stance-aggressive)
+)
+
+; Our three siege pieces spread fire across the enemy ranged formation.
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: archery-class c: 30)
+    (up-find-local c: siege-weapon-class c: 3)
+    (up-target-objects 0 action-default formation-stagger stance-stand-ground)
+)
+
+(defrule
+    (timer-triggered 1)
+=>
+    (enable-timer 1 2)
+)

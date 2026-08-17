@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['single_match.py'],
     pathex=[],
     binaries=[],
     datas=[],

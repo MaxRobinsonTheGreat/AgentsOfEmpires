@@ -1,0 +1,41 @@
+; strat_stonewall.per - bait then counterattack ("stonewall")
+; Hold ground for the first 45s: melee on defensive stance (fight, don't chase),
+; ranged on stand-ground. The enemy blob walks into our Siege Onager + Heavy
+; Scorpion kill zone and eats the first splash. Then full counterattack.
+
+(defrule
+    (true)
+=>
+    (up-change-name "stonewall")
+    (set-strategic-number sn-number-attack-groups 40)
+    (set-strategic-number sn-minimum-attack-group-size 1)
+    (set-strategic-number sn-maximum-attack-group-size 200)
+    (set-strategic-number sn-percent-attack-soldiers 100)
+    (set-strategic-number sn-attack-intelligence 1)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-set-attack-stance samurai c: stance-defensive)
+    (up-set-attack-stance elite-samurai c: stance-defensive)
+    (up-set-attack-stance spearman c: stance-defensive)
+    (up-set-attack-stance pikeman c: stance-defensive)
+    (up-set-attack-stance halberdier c: stance-defensive)
+    (up-set-attack-stance arbalest c: stance-stand-ground)
+    (up-set-attack-stance elite-skirmisher c: stance-stand-ground)
+    (enable-timer 1 45)
+    (disable-self)
+)
+
+; --- counterattack: stances aggressive, pulse attack-now ---
+(defrule
+    (timer-triggered 1)
+=>
+    (up-set-attack-stance samurai c: stance-aggressive)
+    (up-set-attack-stance elite-samurai c: stance-aggressive)
+    (up-set-attack-stance spearman c: stance-aggressive)
+    (up-set-attack-stance pikeman c: stance-aggressive)
+    (up-set-attack-stance halberdier c: stance-aggressive)
+    (up-set-attack-stance arbalest c: stance-aggressive)
+    (up-set-attack-stance elite-skirmisher c: stance-aggressive)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (attack-now)
+    (enable-timer 1 10)
+)

@@ -1,0 +1,72 @@
+; strat_promi_screen.per - full Promisory + passive melee opening
+; Keep Promisory's active ranged orb and siege micro. For 32 seconds, Samurai
+; and pikes form a non-chasing screen so enemy units enter our firing/splash
+; zone. Then release the screen and return full control to Promisory.
+
+(load "Promisory\defaultConstants")
+(load "Promisory\finalingConstants")
+(load "Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "Promisory\init")
+(load "Promisory\threats")
+(load "Promisory\escrow")
+(load "Promisory\dawn")
+(load "Promisory\gatherers")
+(load "Promisory\scoutcontrol")
+(load "Promisory\tsa")
+(load "Promisory\watercontrol")
+(load "Promisory\general")
+(load "Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "Promisory\researches")
+(load "Promisory\interaction")
+(load "Promisory\buildings")
+(load "Promisory\units")
+(load "Promisory\trade")
+(load "Promisory\resign")
+#else
+(load "Promisory\finaling")
+#end-if
+(load "Promisory\event")
+
+(defrule
+    (true)
+=>
+    (up-change-name "promi-screen")
+    (disable-self)
+)
+
+; Reassert after Promisory's own rules each pass. Ranged units and siege remain
+; untouched, so Promisory can still kite, volley, split, and dodge onager shots.
+(defrule
+    (game-time < 32)
+=>
+    (up-set-attack-stance samurai c: stance-defensive)
+    (up-set-attack-stance elite-samurai c: stance-defensive)
+    (up-set-attack-stance spearman c: stance-defensive)
+    (up-set-attack-stance pikeman c: stance-defensive)
+    (up-set-attack-stance halberdier c: stance-defensive)
+)
+
+; One-time release. Promisory resumes normal melee control after this point.
+(defrule
+    (game-time >= 32)
+=>
+    (up-set-attack-stance samurai c: stance-aggressive)
+    (up-set-attack-stance elite-samurai c: stance-aggressive)
+    (up-set-attack-stance spearman c: stance-aggressive)
+    (up-set-attack-stance pikeman c: stance-aggressive)
+    (up-set-attack-stance halberdier c: stance-aggressive)
+    (up-update-targets)
+    (disable-self)
+)
+
+(include "ailib/Geometry.xs")

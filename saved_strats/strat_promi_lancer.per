@@ -1,0 +1,90 @@
+; strat_promi_lancer.per - full Promisory + surgical mounted anti-siege layer
+; Keep Promisory's proven ranged/onager micro. Every five seconds, only four
+; Mounted Samurai focus the enemy Siege Onager, then Heavy Scorpions. The rest
+; of the army remains under Promisory control.
+
+(load "Promisory\defaultConstants")
+(load "Promisory\finalingConstants")
+(load "Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "Promisory\init")
+(load "Promisory\threats")
+(load "Promisory\escrow")
+(load "Promisory\dawn")
+(load "Promisory\gatherers")
+(load "Promisory\scoutcontrol")
+(load "Promisory\tsa")
+(load "Promisory\watercontrol")
+(load "Promisory\general")
+(load "Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "Promisory\researches")
+(load "Promisory\interaction")
+(load "Promisory\buildings")
+(load "Promisory\units")
+(load "Promisory\trade")
+(load "Promisory\resign")
+#else
+(load "Promisory\finaling")
+#end-if
+(load "Promisory\event")
+
+; Promisory reserves timers 1-49; DE supports 1-50.
+(defrule
+    (true)
+=>
+    (up-change-name "promi-lancer")
+    (enable-timer 50 5)
+    (disable-self)
+)
+
+; Keep DUC's remote search pointed at the current enemy.
+(defrule
+    (true)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)
+
+; Clear stale DUC lists at the start of each pulse.
+(defrule
+    (timer-triggered 50)
+=>
+    (up-full-reset-search)
+)
+
+; Four fast units dive the army-killing onager; stagger reduces splash/pathing.
+(defrule
+    (timer-triggered 50)
+    (up-find-remote c: siege-onager c: 1)
+=>
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 4)
+    (up-target-objects 1 action-default formation-stagger stance-aggressive)
+)
+
+; Once the onager is gone, remove the two remaining area-damage pieces.
+(defrule
+    (timer-triggered 50)
+    (not (up-find-remote c: siege-onager c: 1))
+    (up-find-remote c: heavy-scorpion c: 1)
+=>
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 4)
+    (up-target-objects 1 action-default formation-stagger stance-aggressive)
+)
+
+(defrule
+    (timer-triggered 50)
+=>
+    (enable-timer 50 5)
+)
+
+(include "ailib/Geometry.xs")

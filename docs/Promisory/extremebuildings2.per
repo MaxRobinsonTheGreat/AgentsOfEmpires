@@ -1,0 +1,1010 @@
+;This code is disabled in non-development versions of the AI for now - the intention of this code is to wall the front of its base with
+;houses and other buildings, but there are some issues remaining with units occasionally getting stuck behind buildings etc.
+
+;to re-enable, remove the following line and the #end-if at the end of this file
+
+;4411
+
+
+(defrule
+    (true)
+=>
+    (set-goal newsystem no)
+    (set-goal last-building 358)
+    (set-goal last-building-y 358);if the coordinates are absurd we know it hasn't been initialised yet
+    (disable-self)
+)
+
+(defrule
+    (timer-triggered two-mins);Debug rule
+=>
+    ;(chat-local-to-self "new system activated.")
+    ;(up-chat-data-to-player my-player-number "New system activated? %d" g: newsystem)
+;    (up-send-flare last-building)
+    (do-nothing)
+    )
+
+(defrule
+    (players-building-count any-enemy > 0)
+    (not(goal newsystem yes))
+=>
+    (up-modify-goal temporary-goal7 s:= sn-focus-player-number)
+    (up-find-player enemy find-closest temporary-goal)
+    (up-modify-sn sn-focus-player-number g:= temporary-goal)
+    (up-full-reset-search)
+    (up-filter-distance c: 10 c: 80)
+ ;   (up-find-remote c: building-class c: 1)
+)
+
+(defrule
+;    (players-building-count target-player > 0)
+    (players-building-count any-enemy > 0)
+    (up-find-remote c: building-class c: 1)
+    (or(up-research-status c: imperial-age < 2)
+    (current-age <= feudal-age))
+    (building-count > 4)
+    (population <= switch-pop)
+=>
+    (set-goal newsystem yes)
+)
+
+(defrule
+    (or(population > switch-pop)
+    (up-research-status c: imperial-age != 1))
+    (current-age >= castle-age)
+=>
+    (set-goal newsystem no)
+)
+
+(defrule
+    (timer-triggered two-mins)
+    (game-time < 1001)
+=>
+    (set-strategic-number closed-map-rating 0)
+    (up-get-point position-self point-x)
+    (up-get-point position-flank point2-x)
+    (up-lerp-tiles point-x point2-x c: 19);22
+    (set-goal temporary-goal3 40)
+)
+
+(defrule
+    (or(up-point-contains point-x c: tree-class)
+    (or(up-point-terrain point-x c: terrain-water)
+    (up-point-contains point-x c: building-class)))
+    (timer-triggered two-mins)
+    (game-time < 1001)
+=>
+    (up-modify-sn closed-map-rating c:+ 1)
+)
+
+(defrule
+    (up-compare-goal temporary-goal3 > 0)
+    (timer-triggered two-mins)
+    (game-time < 1001)
+=>
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-cross-tiles point-x position-self-x c: 2)
+    (up-bound-point point-x point-x)
+    (up-jump-rule -2)
+)
+
+; (defrule
+;     (timer-triggered two-mins)
+; =>
+;     (up-chat-data-to-player my-player-number "Map closed rating %d" s: closed-map-rating)
+; )
+
+#load-if-not-defined OASIS-MAP
+#load-if-not-defined MONGOLIA-MAP
+#load-if-not-defined YUCATAN-MAP
+(defrule
+    (wall-completed-percentage 2 < 25)
+    (up-compare-sn closed-map-rating < 13)
+    (game-time > 3)
+=>
+    (set-goal newsystem no)
+;    (chat-to-player my-player-number "Switch off building")
+)
+#end-if
+#end-if
+#end-if
+(defrule
+    (or(up-compare-const enable-building-walling == 0)
+    (or(starting-resources >= ultra-high-resources)
+    (game-type == 2)));deathmatch
+=>
+    (set-goal newsystem no)
+)
+(defrule
+    ;(goal map water)
+    (or(goal inseln yes)
+    (and(map-type black-forest)
+    (player-in-game any-ally)))
+=>
+    (set-goal newsystem no)
+)
+(defrule
+    (players-building-count any-enemy > 0)
+    (not(goal newsystem yes))
+=>
+    (up-modify-sn sn-focus-player-number g:= temporary-goal7)
+)
+
+(defrule
+    (strategic-number sn-thousand-rule-pass == 600)
+    (up-point-distance last-building position-self-x < 22)
+=>
+    (up-lerp-tiles last-building position-self-x c: -1)
+)
+
+(defrule
+    (timer-triggered two-mins)
+    (up-point-distance last-building position-self-x > 25)
+    (nor(goal last-building 358)
+    (goal last-building-y 358))
+=>
+    (up-lerp-tiles last-building position-self-x c: 1)
+)
+
+(defrule
+    (up-point-distance last-building position-self-x > 30)
+    (or(game-time > 1800)
+    (up-point-distance last-building position-self-x > 27))
+    (nor(goal last-building 358)
+    (goal last-building-y 358))
+=>
+    (set-goal newsystem no)
+ ;   (chat-local-to-self "Distance to far, turning off new system")
+)
+
+(defrule
+    (up-compare-goal gl-threat-time < 1500)
+    (current-age >= feudal-age)
+    (goal attacking no)
+=>
+;    (chat-local-to-self "we have been attacked in past 10s")
+    (set-goal newsystem no)
+)
+
+
+
+(defrule
+    (up-compare-goal last-building != 358)
+    (up-compare-goal last-building-y != 358)
+=>
+
+;    (up-send-flare last-building) ;debug
+;    (chat-local-to-self "spam")
+    (up-jump-rule 6)
+)
+
+
+
+
+
+
+(defrule
+    (goal newsystem yes)
+=>
+    (up-get-point position-target point-x)
+    (up-copy-point point2-x position-self-x)
+    (up-modify-goal temporary-goal s:= sn-camp-max-distance)
+    (up-modify-goal temporary-goal c:min 9)
+    (up-modify-goal temporary-goal c:max 16)
+    (up-lerp-tiles point2-x point-x g: temporary-goal);adjust this value
+    (up-lerp-tiles point2-x point-x c: 2)
+    (up-cross-tiles point2-x position-self-x c: -10);-9
+;    (up-send-flare point2-x)
+    (set-goal temporary-goal3 14);11;12
+    (up-get-point position-corner point3-x)
+)
+
+(defrule
+    (or(or(up-point-contains point2-x c: tree-class)
+    (up-compare-goal point2-x g:== point3-x))
+    (or(up-compare-goal point2-y g:== point3-y);if either goal is equal to corner we know we are on nearest two edges
+    (up-compare-goal temporary-goal3 <= 0)))
+    (goal newsystem yes)
+
+=>
+    (up-bound-point point2-x point2-x)
+    (up-copy-point last-building point2-x)
+;    (up-send-flare last-building)
+    (up-jump-rule 1)
+)
+
+(defrule
+    (up-compare-goal temporary-goal3 >= 0)
+    (goal newsystem yes)
+=>
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-cross-tiles point2-x position-self-x c: -1)
+    (up-copy-point last-building point2-x)
+;    (up-send-flare point2-x)
+    (up-jump-rule -1)
+)
+(defrule
+    (goal newsystem yes)
+    (game-time > 600)
+    (players-building-count every-enemy < 1)
+=>
+    (up-get-point position-center point-x)
+    (up-copy-point point2-x position-self-x)
+    (up-modify-goal temporary-goal s:= sn-camp-max-distance)
+    (up-modify-goal temporary-goal c:min 9)
+    (up-modify-goal temporary-goal c:max 16)
+    (up-lerp-tiles point2-x point-x g: temporary-goal);adjust this value
+    (up-lerp-tiles point2-x point-x c: 2)
+    (up-cross-tiles point2-x position-self-x c: -10);-9
+;    (up-send-flare point2-x)
+    (set-goal temporary-goal3 14);11;12
+    (up-get-point position-corner point3-x)
+)
+
+(defrule
+    (or(or(up-point-contains point2-x c: tree-class)
+    (up-compare-goal point2-x g:== point3-x))
+    (or(up-compare-goal point2-y g:== point3-y);if either goal is equal to corner we know we are on nearest two edges
+    (up-compare-goal temporary-goal3 <= 0)))
+    (goal newsystem yes)
+    (game-time > 600)
+    (players-building-count every-enemy < 1)
+=>
+    (up-bound-point point2-x point2-x)
+    (up-copy-point last-building point2-x)
+;    (up-send-flare last-building)
+    (up-jump-rule 1)
+)
+
+(defrule
+    (up-compare-goal temporary-goal3 >= 0)
+    (goal newsystem yes)
+    (game-time > 600)
+    (players-building-count every-enemy < 1)
+=>
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-cross-tiles point2-x position-self-x c: -1)
+    (up-copy-point last-building point2-x)
+;    (up-send-flare point2-x)
+    (up-jump-rule -1)
+)
+
+
+;Additional housing rules if system ON (try to keep 1 vill constantly building houses past mid feudal)
+(defrule
+    (true)
+=>
+    ;(up-get-fact up-pending-objects c: building-class temporary-goal)
+    ;(up-get-fact up-pending-objects c: farm-class temporary-goal2)
+    ;(up-modify-goal temporary-goal g:- temporary-goal2)
+    (up-full-reset-search)
+    (up-filter-status c: status-pending c: list-active)
+    (up-find-status-local c: building-class c: 5)
+    (up-get-search-state temporary-goal)
+    (up-modify-goal temporary-goal5 g:= temporary-goal)
+    (up-find-status-local c: farm-class c: 5)
+    (up-get-search-state temporary-goal);we only care about local count so this is fine
+    (up-modify-goal temporary-goal5 g:- temporary-goal)
+)
+
+(defrule
+    (up-compare-goal temporary-goal5 > 0)
+=>
+    (up-jump-rule 1)
+)
+
+(defrule
+    (timer-triggered threesec)
+    (or(unit-type-count-total villager > 30)
+    (housing-headroom < 10))
+    (current-age-time > 180)
+    (goal newsystem yes)
+    (housing-headroom < 50)
+    (up-pending-objects c: house < 1)
+    (research-completed ri-horse-collar)
+    (research-completed ri-double-bit-axe)
+    (can-build house)
+    (building-type-count-total house < max-houses)
+=>
+    (set-goal increase-ts house)
+)
+
+(defrule
+    (up-compare-goal increase-ts > 9);archery range variation (ID 10) is lowest building ID, so any value passed to increase-ts below that is likely a number
+    (up-can-build 1 g: increase-ts)
+    (goal newsystem yes)
+=>
+    (up-copy-point temporary-point-x last-building)
+    ;(up-chat-data-to-player my-player-number "Attempting to build a %d" g: increase-ts)
+    ;(up-chat-data-to-player my-player-number "At point %d" g: temporary-point-x)
+    ;(up-send-flare temporary-point-x)
+    (set-goal temporary-goal3 11);7;9
+)
+
+(defrule
+    (up-can-build-line 1 temporary-point-x g: increase-ts)
+    (goal newsystem yes)
+    (up-compare-goal increase-ts > 9)
+    (up-can-build 1 g: increase-ts)
+=>
+    (up-build-line temporary-point-x temporary-point-x g: increase-ts)
+    (up-modify-goal bwall-total c:+ 1)
+    (up-copy-point last-building temporary-point-x)
+   ; (up-chat-data-to-player my-player-number "Building at point %d" g: temporary-point-x)
+    ;(up-send-flare temporary-point-x)
+    (set-goal increase-ts 0)
+    (up-jump-rule 2);was 1
+)
+
+;Experiment - attempt to place wall if building placement impossible
+
+(defrule
+    (up-can-build-line 1 temporary-point-x c: palisade-wall)
+    (up-can-build 1 g: increase-ts)
+    (not(up-can-build-line 1 temporary-point-x g: increase-ts))
+    (goal newsystem yes)
+    (up-compare-goal increase-ts > 9)
+    (up-can-build 1 c: palisade-wall)
+    (up-pending-objects c: palisade-wall < 2)
+    (up-pending-objects g: increase-ts < 1)
+=>
+;    (up-build-line temporary-point-x temporary-point-x c: palisade-wall)
+    (do-nothing)
+;    (up-copy-point last-building temporary-point-x)
+;    (up-jump-rule 2)
+)
+
+(defrule
+    (goal newsystem yes)
+    (up-can-build 1 g: increase-ts)
+    (up-compare-goal temporary-goal3 > 0)
+    (up-compare-goal increase-ts > 9)
+=>
+    (up-modify-goal temporary-goal3 c:- 1)
+    (up-cross-tiles temporary-point-x position-self-x c: 1)
+    ;(up-chat-data-to-player my-player-number "Searching at point %d" g: temporary-point-x)
+    ;(up-send-flare temporary-point-x)
+    (up-jump-rule -3);was -2
+)
+
+(defrule
+	(goal newsystem yes)
+	(wood-amount > 6)
+	(timer-triggered threesec);look up to 3 tiles ahead and try to adapt placement
+=>
+	(up-copy-point point-x last-building)
+	(up-cross-tiles point-x position-self-x c: 1)
+	(up-copy-point point2-x point-x)
+	(up-cross-tiles point-x position-self-x c: 1)
+	(up-copy-point point3-x point2-x)
+	(up-cross-tiles point3-x position-self-x c: 1)
+)
+
+
+(defrule
+	(goal newsystem yes)
+	(wood-amount > 6)
+	(or(up-point-contains point-x c: tree-class)
+	(up-point-contains point2-x c: tree-class))
+	(timer-triggered threesec)
+	(or(up-can-build-line 0 point-x c: palisade-wall)
+	(up-can-build-line 0 point2-x c: palisade-wall))
+=>
+	(up-build-line point-x point2-x c: palisade-wall)
+	(up-copy-point last-building point2-x)
+)
+
+(defrule
+    (goal newsystem yes)
+    (can-build house)
+    (up-point-contains point3-x c: tree-class)
+    (timer-triggered threesec)
+    (nor(up-point-contains point2-x c: tree-class)
+    (up-point-contains point-x c: tree-class))
+    (up-can-build-line 0 point-x c: house)
+    (up-point-distance last-building point-x < 8);potential leak - check 
+=>
+    (up-build-line point-x point2-x c: house)
+    (up-copy-point last-building point2-x)
+)
+
+(defrule
+    (goal newsystem yes)
+    (can-build palisade-wall)
+    (or(up-point-terrain point-x == terrain-water-beach)
+    (up-point-terrain point-x == terrain-ice-beach))
+    (timer-triggered threesec)
+    (up-can-build-line 0 point-x c: palisade-wall)
+=>
+    (up-build-line point-x point-x c: palisade-wall)
+    (up-copy-point last-building point-x)
+    (chat-local-to-self "Attempting to avoid zak wall")
+    (disable-self)
+)
+(defrule
+    (goal newsystem yes)
+    (can-build palisade-wall)
+    (or(up-point-terrain point2-x == terrain-water-beach)
+    (up-point-terrain point2-x == terrain-ice-beach))
+    (timer-triggered threesec)
+    (up-can-build-line 0 point-x c: palisade-wall)
+=>
+    (up-build-line point-x point2-x c: palisade-wall)
+    (up-copy-point last-building point2-x)
+    (chat-local-to-self "Attempting to avoid zak wall 2")
+    (disable-self)
+)
+
+;(defrule
+;    (goal newsystem yes)
+;    (or(strategic-number sn-thousand-rule-pass == 250)
+;    (strategic-number sn-thousand-rule-pass == 750))
+;=>
+;    (up-lerp-tiles last-building position-self-x c: -1)
+;)
+
+(defrule
+    (goal newsystem yes)
+    (nor(goal last-building 358)
+    (goal last-building-y 358))
+=>
+    (up-full-reset-search)
+    (up-set-target-point last-building)
+    (up-filter-status c: status-resource c: list-active)
+    (up-filter-distance c: -1 c: 3)
+    (up-find-resource c: gold-mine-class c: 1)
+    (up-find-resource c: stone-mine-class c: 1)
+    (up-find-local c: farm c: 1)
+    (up-get-search-state temporary-goal)
+)
+
+(defrule
+    (or(up-compare-goal temporary-goal > 0)
+    (up-compare-goal temporary-goal3 > 0))
+    (goal newsystem yes)
+    (nor(goal last-building-y 358)
+    (goal last-building 358))
+    (or(up-find-local c: farm c: 1)
+    (or(up-find-resource c: gold-mine-class c: 1)
+    (up-find-resource c: stone-mine-class c: 1)))
+    (wood-amount > 2)
+    (up-can-build-line 0 last-building c: palisade-wall)
+=>
+    (up-build-line last-building last-building c: palisade-wall)
+    (up-lerp-tiles last-building position-self-x c: -1)
+    ;(chat-local-to-self "Expanding building wall because of nearby resource")
+)
+
+
+;#load-if-defined DISABLED 
+(defrule
+    (building-type-count-total lumber-camp > 2)
+    (up-find-local c: lumber-camp c: 1)
+    (nor(goal last-building-y 358)
+    (goal last-building 358))
+    (goal newsystem yes)
+=>
+    (up-lerp-tiles last-building position-self-x c: -1)
+    ;(chat-local-to-self "Expanding building wall because of LC")
+    )
+;#end-if
+
+(defrule
+    (true)
+=>
+    (up-get-point position-map-size point-x)
+)
+(defrule
+    (up-compare-goal last-building < 6)
+    (up-compare-goal last-building-y < 6)
+
+    (up-modify-goal point-x c:- 6)
+    (up-modify-goal point-y c:- 6)
+    (up-compare-goal last-building g:> point-x)
+    (up-compare-goal last-building g:> point-y)
+=>
+;    (chat-to-player my-player-number "We are within 6 tiles of an edge, don't build gate")
+    (up-jump-rule 16)
+)
+(defrule
+    (or(building-type-count-total gate > 0)
+    (or(and(unit-type-count-total villager-stone < 1)
+    (up-compare-goal bwall-total c:< req-buildings2))
+    (or(up-compare-goal gl-threat-time < 3000)
+    (or(up-compare-goal bwall-total c:< req-buildings1)
+    (goal newsystem no)))))
+=>
+    (up-jump-rule 15)
+)
+
+(defrule
+    (true)
+=>
+    (up-copy-point point-x last-building)
+    (up-copy-point point2-x last-building)
+    (up-copy-point point3-x last-building)
+    (up-cross-tiles point-x position-self-x c: 1)
+    (up-cross-tiles point2-x position-self-x c: 2)
+    (up-cross-tiles point3-x position-self-x c: 3)
+)
+
+(defrule
+    (or(or(up-point-contains point-x c: tree-class)
+    (up-point-contains point2-x c: tree-class))
+    (or(up-point-contains point3-x c: tree-class)
+    (stone-amount < 75)))
+=>
+    (up-jump-rule 13)
+)
+(defrule
+ ;   (unit-type-count-total villager-stone > 0);test
+    (goal newsystem yes)
+    (building-type-count-total gate < 1);test
+
+=>
+    (up-copy-point temporary-point-x last-building)
+    (up-cross-tiles temporary-point-x position-self-x c: 7)
+    (up-copy-point blcoord-point-x last-building)
+    (up-copy-point blcoord-point2-x temporary-point-x)
+    (up-bound-point blcoord-point-x blcoord-point-x)
+    (up-bound-point blcoord-point2-x blcoord-point2-x)
+)
+	
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal palisade-gate-foundation1)
+	(set-goal temporary-goal2 palisade-gate-foundation2)
+	(set-goal temporary-goal3 palisade-gate-foundation3)
+	(set-goal temporary-goal4 palisade-gate-foundation4)
+	(set-goal temporary-goal5 palisade-wall)
+	(set-goal temporary-goal6 -1))
+(defrule
+	(building-available stone-wall)
+	(building-available gate)
+=>
+	(set-goal temporary-goal stone-gate1)
+	(set-goal temporary-goal2 stone-gate2)
+	(set-goal temporary-goal3 stone-gate3)
+	(set-goal temporary-goal4 stone-gate4)
+    (set-goal temporary-goal8 1000);sanity check
+	(set-goal temporary-goal5 stone-wall))
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal blcoord-point-x g:> blcoord-point2-x)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+=>
+	(up-copy-point point-x blcoord-point-x)
+	(up-modify-goal blcoord-point-x g:= blcoord-point2-x)
+	(up-modify-goal blcoord-point-y g:= blcoord-point2-y)
+	(up-modify-goal blcoord-point2-x g:= point-x)
+	(up-modify-goal blcoord-point2-y g:= point-y))
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+=>
+	(up-copy-point point-x blcoord-point-x)
+	(up-copy-point point2-x blcoord-point2-x)
+	(up-modify-goal point-y c:* 100)
+	(up-modify-goal point2-y c:* 100)
+	(up-modify-goal point-y g:- point2-y)
+	(up-modify-goal point-x g:- point2-x)
+	(up-modify-goal point-y g:/ point-x))
+(defrule; end neg jump
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal temporary-goal6 >= 0)
+	(up-compare-goal point-y <= -50)
+	(up-compare-goal point-y >= -199)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+	(up-point-distance blcoord-point-x blcoord-point2-x >= 2)
+	(up-can-build-line 0 blcoord-point-x g: temporary-goal4)
+=>
+	(up-modify-goal temporary-goal6 c:- 20)
+	(up-copy-point point2-x blcoord-point-x)
+	(up-modify-goal point2-x c:+ 1)
+	(up-build-line point2-x point2-x g: temporary-goal4)
+    (up-copy-point last-building point2-x)
+;    (up-send-flare point2-x)
+    )
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal temporary-goal6 >= 0)
+;	(up-compare-goal blcoord-point-y g:<= blcoord-point2-y)
+	(up-compare-goal point-y >= 50)
+	(up-compare-goal point-y <= 199)
+	(up-compare-goal blcoord-point-x != -1)	
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+	(up-point-distance blcoord-point-x blcoord-point2-x >= 2)
+	(up-can-build-line 0 blcoord-point-x g: temporary-goal3)
+=>
+	(up-modify-goal temporary-goal6 c:- 20)
+	(up-build-line blcoord-point-x blcoord-point-x g: temporary-goal3)
+    (up-copy-point last-building blcoord-point-x)
+;    (up-send-flare blcoord-point-x)
+)
+
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal temporary-goal6 >= 0)
+;	(up-compare-goal blcoord-point-y g:== blcoord-point2-y)
+	(up-compare-goal point-y <= 49)
+	(up-compare-goal point-y >= -49)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+	(up-point-distance blcoord-point-x blcoord-point2-x >= 2)
+	(up-can-build-line 0 blcoord-point-x g: temporary-goal2)
+=>
+	(up-modify-goal temporary-goal6 c:- 20)
+	(up-build-line blcoord-point-x blcoord-point-x g: temporary-goal2)
+    (up-copy-point last-building blcoord-point-x)
+ ;   (up-send-flare blcoord-point-x)
+)
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal temporary-goal6 >= 0)
+;	(up-compare-goal blcoord-point-x g:== blcoord-point2-x)
+(or	(up-compare-goal point-y >= 200)
+	(up-compare-goal point-y <= -200))
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+	(up-point-distance blcoord-point-x blcoord-point2-x >= 2)
+	(up-can-build-line 0 blcoord-point-x g: temporary-goal)
+=>
+	(up-modify-goal temporary-goal6 c:- 20)
+	(up-build-line blcoord-point-x blcoord-point-x g: temporary-goal)
+    (up-copy-point last-building blcoord-point-x)
+;    (up-send-flare blcoord-point-x)
+)
+
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+	(up-can-build-line 0 blcoord-point-x g: temporary-goal5)
+=>
+	(up-modify-goal temporary-goal6 c:+ 1)
+	(up-build-line blcoord-point-x blcoord-point-x g: temporary-goal5))
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+	(up-point-distance blcoord-point-x blcoord-point2-x >= 1)
+    (up-compare-goal temporary-goal8 >= -20)
+=>
+    (up-modify-goal temporary-goal8 c:- 1)
+	(up-lerp-tiles blcoord-point-x blcoord-point2-x c: 1)
+	(up-jump-rule -6))
+(defrule
+;	(taunt-detected any-human-ally 54)
+	(up-compare-goal blcoord-point-x != -1)
+	(up-compare-goal blcoord-point-y != -1)
+	(up-compare-goal blcoord-point2-x != -1)
+	(up-compare-goal blcoord-point2-y != -1)
+(or	(up-point-explored blcoord-point-x != explored-no)
+	(up-point-explored blcoord-point2-x != explored-no))
+=>
+;;	(chat-to-allies-using-id 22153); "39 At once, sire!"
+;	(acknowledge-taunt every-ally 54)
+	(set-goal blcoord-point-x -1)
+;    (up-copy-point last-building blcoord-point2-x)
+	(set-goal blcoord-point-y -1)
+	(set-goal blcoord-point2-x -1)
+	(set-goal blcoord-point2-y -1))
+;End jump (13)
+
+; (defrule
+;     (or(up-pending-objects c: gate-class > 0)
+;     (or(up-pending-objects c: gate-ascending > 0)
+;     (or(up-pending-objects c: gate-descending > 0)
+;     (or(up-pending-objects c: gate-vertical > 0)
+;     (up-pending-objects c: gate-horizontal c: 1)))))
+;     (goal newsystem yes)
+; =>
+;     (up-full-reset-search)
+;     (up-filter-status c: status-pending c: list-active)
+;     (up-find-local c: gate-ascending c: 1)
+;     (up-find-local c: gate-descending c: 1)
+;     (up-find-local c: gate-vertical c: 1);I have no clue what the foundation IDs are 
+;     (up-find-local c: gate-horizontal c: 1)
+;     (up-set-target-object search-local c: 0)
+;     (up-get-point position-object point-x)
+;     (up-copy-point last-building point-x)
+;     (up-chat-data-to-player my-player-number "Moving gate to point %d" g: point-x)
+;     (up-send-flare point-x)
+;     (disable-self)
+; )
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-compare-goal bwall-total > 10)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x last-building)
+    (up-modify-goal point-x g:= point2-x);compare y distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-point-distance point-x point2-x < 15)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 10)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 1)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 1)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-compare-goal bwall-total > 10)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x last-building)
+    (up-modify-goal point-y g:= point2-y);compare x distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-point-distance point-x point2-x < 15)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 10)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 2)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 2)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x last-building)
+    (up-modify-goal point-x g:= point2-x);compare y distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+    (up-point-distance point-x point2-x < 8)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 8)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 1)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 1)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x last-building)
+    (up-modify-goal point-y g:= point2-y);compare x distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 8)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 2)
+    (up-point-distance point-x point2-x < 8)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 2)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+;Could optimize with jump if running out of rules
+
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-compare-goal bwall-total > 10)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x first-building)
+    (up-modify-goal point-x g:= point2-x);compare y distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-point-distance point-x point2-x < 15)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 10)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 4)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 4)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-compare-goal bwall-total > 10)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x first-building)
+    (up-modify-goal point-y g:= point2-y);compare x distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (building-type-count-total castle > 0)
+    (population > 100)
+    (stone-amount > 100)
+    (up-point-distance point-x point2-x < 15)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 10)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 8)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 8)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x first-building)
+    (up-modify-goal point-x g:= point2-x);compare y distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+    (up-point-distance point-x point2-x < 8)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 8)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 4)
+    
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 4)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+=>
+    (up-get-point position-corner point-x)
+    (up-copy-point point2-x first-building)
+    (up-modify-goal point-y g:= point2-y);compare x distance
+    (up-bound-point point-x point-x)
+)
+
+(defrule
+    (population > 70)
+    (or(stone-amount > 300)
+    (building-type-count-total town-center > 3))
+    (up-compare-goal bwall-total > 8)
+;    (up-can-build-line 0 point-x c: stone-wall)
+    (up-compare-goal bwall-total > 8)
+    (building-available stone-wall)
+    (up-compare-flag building-flags != 8)
+    (up-point-distance point-x point2-x < 8)
+    (up-point-distance point-x position-self-x < 50)
+    (up-point-distance point2-x position-self-x < 50)
+=>
+    (up-build-line point-x point2-x c: stone-wall)
+    (up-modify-flag building-flags c:+ 8)
+;    (up-send-flare point-x)
+;    (up-send-flare point2-x)
+)
+
+(defrule
+    (up-compare-goal bwall-total == 1)
+=>
+    (up-copy-point first-building last-building)
+    (disable-self)
+)
+
+
+
+
+
+
+
+(defrule
+    (up-compare-sn sn-focus-player-number != sn-target-player-number)
+    (players-building-count target-player > 0)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)

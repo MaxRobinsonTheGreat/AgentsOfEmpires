@@ -1,0 +1,98 @@
+(defrule
+    (true)
+=>
+    (up-change-name "deep_hunter")
+)
+
+(load "strat_deep_hunter\Promisory\defaultConstants")
+(load "strat_deep_hunter\Promisory\finalingConstants")
+(load "strat_deep_hunter\Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "strat_deep_hunter\Promisory\init")
+(load "strat_deep_hunter\Promisory\threats")
+(load "strat_deep_hunter\Promisory\escrow")
+(load "strat_deep_hunter\Promisory\dawn")
+(load "strat_deep_hunter\Promisory\gatherers")
+(load "strat_deep_hunter\Promisory\scoutcontrol")
+(load "strat_deep_hunter\Promisory\tsa")
+(load "strat_deep_hunter\Promisory\watercontrol")
+(load "strat_deep_hunter\Promisory\general")
+(load "strat_deep_hunter\Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "strat_deep_hunter\Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "strat_deep_hunter\Promisory\researches")
+(load "strat_deep_hunter\Promisory\interaction")
+(load "strat_deep_hunter\Promisory\buildings")
+(load "strat_deep_hunter\Promisory\units")
+(load "strat_deep_hunter\Promisory\trade")
+(load "strat_deep_hunter\Promisory\resign")
+#else
+(load "strat_deep_hunter\Promisory\finaling")
+#end-if
+(load "strat_deep_hunter\Promisory\event")
+
+(defconst deep-hunter-loader-confirmed 14994)
+(defconst deep-hunter-loop-confirmed 14996)
+(defrule
+    (player-number scenario-player-1)
+=>
+    (set-strategic-number sn-target-player-number 2)
+    (set-strategic-number sn-focus-player-number 2)
+)
+(defrule
+    (player-number scenario-player-2)
+=>
+    (set-strategic-number sn-target-player-number 1)
+    (set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+    (true)
+=>
+    (set-goal deep-hunter-loader-confirmed 0)
+    (set-goal deep-hunter-loop-confirmed 0)
+    (enable-timer 50 3)
+    (disable-self)
+)
+(defrule
+    (timer-triggered 50)
+=>
+    (up-full-reset-search)
+)
+(defrule
+    (timer-triggered 50)
+    (goal deep-hunter-loop-confirmed 0)
+=>
+    (chat-to-player my-player-number "DEEP-HUNTER: CONTROLLER ACTIVE")
+    (set-goal deep-hunter-loop-confirmed 1)
+)
+(defrule
+    (timer-triggered 50)
+    (up-find-remote c: siege-onager c: 1)
+=>
+    (up-clean-search search-remote object-data-distance search-order-asc)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 6)
+    (up-target-objects 1 action-default formation-stagger stance-aggressive)
+)
+(defrule
+    (timer-triggered 50)
+    (goal deep-hunter-loader-confirmed 0)
+    (up-find-remote c: siege-onager c: 1)
+=>
+    (chat-to-player my-player-number "DEEP-HUNTER: SIEGE DIVE ACTIVE")
+    (set-goal deep-hunter-loader-confirmed 1)
+)
+(defrule
+    (timer-triggered 50)
+=>
+    (enable-timer 50 3)
+)
+
+(include "ailib/Geometry.xs")

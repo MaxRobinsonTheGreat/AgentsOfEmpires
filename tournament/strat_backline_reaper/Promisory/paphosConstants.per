@@ -1,0 +1,525 @@
+;------------------------------------------------
+;Constants
+;------------------------------------------------
+;------------------------------------------------
+;Units
+;------------------------------------------------
+(defconst achaemenids 46)
+
+(defconst hoplite-line 2110)
+(defconst hippeus 2107)
+
+(defconst immortal 2101)
+(defconst elite-immortal 2102)
+(defconst immortal-line -225)
+
+(defconst hippeus 2107)
+(defconst elite-hippeus 2108)
+
+(defconst spartan-king 2162)
+
+(defconst strategos 2104)
+(defconst elite-strategos 2105)
+
+(defconst war-chariot 2150)
+(defconst elite-war-chariot 2151)
+
+(defconst hoplite 2110 )
+(defconst elite-hoplite 2111)
+
+(defconst transport-ship 2148)
+(defconst merchant-ship 2149)
+
+(defconst scout-ship-line 2123)
+(defconst ramming-ship-line 2127)
+(defconst arrow-ship-line 2130)
+(defconst incendiary-ship-line 2133)
+(defconst mangonel-ship-line 2138)
+(defconst siege-ship-line 2140)
+
+(defconst unpacked-trebuchet 42)
+(defconst packed-trebuchet 331)
+(defconst siege-tower 885)
+(defconst folwark 1734)
+;------------------------------------------------
+;Researches
+;------------------------------------------------
+;------------------------------------------------
+;Units
+;------------------------------------------------
+(defconst ri-battle-drills 1173)
+(defconst ri-elite-immortal 1115)
+(defconst ri-elite-hippeus 1135)
+(defconst ri-elite-strategos 1125)
+(defconst ri-elite-war-chariot 1171)
+(defconst ri-elite-hoplite 1137)
+;------------------------------------------------
+;Buildings
+;------------------------------------------------
+(defconst flag-a 600)
+(defconst sea-tower 785)
+(defconst sea-gate 1379)
+(defconst sea-gate 1380)
+(defconst sea-gate 1381)
+(defconst sea-gate 1382)
+(defconst sea-gate 1383)
+(defconst sea-gate 1384)
+(defconst sea-gate 1385)
+(defconst sea-gate 1386)
+(defconst sea-gate 1387)
+(defconst sea-gate 1388)
+(defconst sea-gate 1389)
+(defconst sea-gate 1390)
+(defconst sea-gate 1391)
+(defconst sea-gate 1392)
+(defconst sea-gate 1393)
+(defconst sea-gate 1394)
+
+(defconst fortified-tower 1102)
+
+(defconst flare 274)
+(defconst hint-object 2238)
+;------------------------------------------------
+;Unique Techs
+;------------------------------------------------
+(defconst ri-sparabaras 1110)
+(defconst ri-laminated-bow 1111)
+(defconst ri-scythed-chariots 1112)
+(defconst ri-karda 1113)
+
+(defconst ri-taxiarchs 1121)
+(defconst ri-iphicratean-tactics 1120)
+(defconst ri-eisphora 1122)
+(defconst ri-delian-league 1123)
+
+(defconst ri-helot-levies 1130)
+(defconst ri-kryptia 1131)
+(defconst ri-xyphos 1132)
+(defconst ri-peloponnesian-league 1133)
+
+(defconst ri-ephorate 1132)
+;------------------------------------------------
+;Ships
+;------------------------------------------------
+(defconst ri-raiding-ship 1144)
+(defconst ri-heavy-raiding-ship 1145)
+(defconst ri-elite-raiding-ship 1146)
+(defconst ri-heavy-ramming-ship 1148)
+(defconst ri-elite-ramming-ship 1149)
+(defconst ri-heavy-arrow-ship 1151)
+(defconst ri-elite-arrow-ship 1152)
+(defconst ri-incendiary-ship 1154)
+(defconst ri-heavy-incendiary-ship 1155)
+(defconst ri-heavy-mangonel-ship 1159)
+;------------------------------------------------
+;Naval Upgrades
+;------------------------------------------------
+(defconst ri-drums 1162)
+(defconst ri-scoop-nets 1161)
+(defconst ri-hypozomata 1165)
+(defconst ri-shipwright 1167)
+
+(defconst ri-merchant-ratio-gold 1255)
+(defconst ri-merchant-ratio-balanced 1256)
+(defconst ri-merchant-ratio-wood 1257)
+
+(defconst ri-chemistry 47)
+(defconst ri-ballistics 93)
+;------------------------------------------------
+;Buildings
+;------------------------------------------------
+(defconst port 2172)
+(defconst shipyard 2119) 
+;------------------------------------------------
+;Goals
+;------------------------------------------------
+(defconst gl-military-count 98)
+(defconst gl-total-army-count-water 99)
+(defconst gl-total-army-count 100)
+(defconst gl-scout-ship-count 101)
+(defconst gl-ramming-ship-count 102)
+(defconst gl-arrow-ship-count 103)
+(defconst gl-incendiary-ship-count 104)
+(defconst gl-mangonel-ship-count 105)
+(defconst gl-siege-ship-count 106)
+;------------------------------------------------
+(defconst gl-total-army-percent 107)
+(defconst gl-scout-ship-percent 108)
+(defconst gl-ramming-ship-percent 109)
+(defconst gl-arrow-ship-percent 110)
+(defconst gl-incendiary-ship-percent 111)
+(defconst gl-mangonel-ship-percent 112)
+(defconst gl-siege-ship-percent 113)
+;------------------------------------------------
+(defconst gl-militia-count 120)
+(defconst gl-spearman-count 121)
+(defconst gl-hoplite-count 122)
+(defconst gl-archer-count 123)
+(defconst gl-skirmisher-count 124)
+(defconst gl-hand-cannoneer-count 125)
+(defconst gl-knight-count 126)
+(defconst gl-light-cav-count 127)
+(defconst gl-chariot-count 128)
+(defconst gl-scorpion-count 129)
+(defconst gl-mangonel-count 130)
+(defconst gl-uu-count 131)
+(defconst gl-monk-count 132)
+(defconst gl-ram-count 133)
+(defconst gl-ca-count 134)
+(defconst gl-war-chariot-count 135)
+(defconst gl-transport-count 136)
+;------------------------------------------------
+(defconst gl-total-army-percent 150)
+(defconst gl-militia-percent 151)
+(defconst gl-spearman-percent 152)
+(defconst gl-hoplite-percent 153)
+(defconst gl-archer-percent 154)
+(defconst gl-skirmisher-percent 155)
+(defconst gl-hand-cannoneer-percent 156)
+(defconst gl-knight-percent 157)
+(defconst gl-light-cav-percent 158)
+(defconst gl-chariot-percent 159)
+(defconst gl-scorpion-percent 160)
+(defconst gl-mangonel-percent 161)
+(defconst gl-uu-percent 162)
+(defconst gl-monk-percent 163)
+(defconst gl-ram-percent 164)
+(defconst gl-ca-percent 165)
+(defconst gl-war-chariot-percent 166)
+(defconst gl-land-army-percent 167)
+(defconst gl-warship-percent 168)
+;------------------------------------------------
+(defconst gl-barracks-count 180)
+(defconst gl-archery-range-count 181)
+(defconst gl-stable-count 182)
+(defconst gl-castle-count 183)
+(defconst gl-siege-workshop-count 184)
+(defconst gl-monastery-count 185)
+(defconst gl-train-count 186)
+(defconst gl-fortified-tower-count 187)
+;------------------------------------------------
+(defconst gl-army-count 188)
+(defconst gl-army-count-1 189)
+(defconst gl-army-count-2 190)
+(defconst gl-army-count-3 191)
+(defconst gl-army-count-4 192)
+;------------------------------------------------
+(defconst gl-lt 200)
+(defconst gl-lc 201)
+(defconst gl-rt 202)
+(defconst gl-rc 203)
+
+(defconst gl-point-x 250)
+(defconst gl-point-y 251)
+
+(defconst gl-point2-x 252)
+(defconst gl-point2-y 253)
+
+(defconst gl-point3-x 254)
+(defconst gl-point3-y 255)
+
+(defconst gl-point4-x 256)
+(defconst gl-point4-y 257)
+
+(defconst gl-point5-x 258)
+(defconst gl-point5-y 259)
+
+(defconst gl-point6-x 260)
+(defconst gl-point6-y 261)
+
+(defconst gl-gate-count 262)
+(defconst gl-gate-selector 263)
+(defconst gl-gate-state 264)
+(defconst gl-units-around-gate 265)
+
+(defconst gl-units-around-town 266)
+(defconst gl-retreat-point-x 267)
+(defconst gl-retreat-point-y 268)
+
+
+(defconst gl-hint-object-point1-x 269)
+(defconst gl-hint-object-point1-y 270)
+
+(defconst gl-hint-object-point2-x 271)
+(defconst gl-hint-object-point2-y 272)
+
+(defconst gl-position-self-x 273)
+(defconst gl-position-self-y 274)
+
+(defconst gl-position-next-tower-x 275)
+(defconst gl-position-next-tower-y 276)
+
+(defconst gl-position-enemy-x 277)
+(defconst gl-position-enemy-y 278)
+
+(defconst gl-flag-id 279)
+(defconst gl-flag-id2 280)
+(defconst gl-flag-id3 281)
+(defconst gl-flag-id4 282)
+(defconst gl-flag-id5 283)
+(defconst gl-flag-id6 284)
+
+(defconst gl-units-available 285)
+(defconst gl-pop-cap 286)
+
+(defconst gl-phase-1 287)
+(defconst gl-phase-2 288)
+(defconst gl-phase-3 289)
+(defconst gl-phase-4 290)
+(defconst gl-phase-5 291)
+
+(defconst gl-pickup-x 292)
+(defconst gl-pickup-y 293)
+
+(defconst gl-pickup2-x 294)
+(defconst gl-pickup2-y 295)
+
+(defconst gl-pickup3-x 296)
+(defconst gl-pickup3-y 297)
+
+(defconst gl-point1-x 298)
+(defconst gl-point1-x 299)
+
+(defconst gl-point7-x 350)
+(defconst gl-point7-y 351)
+
+(defconst gl-point8-x 352)
+(defconst gl-point8-y 353)
+
+(defconst gl-point9-x 354)
+(defconst gl-point9-y 355)
+
+(defconst gl-point10-x 356)
+(defconst gl-point10-y 357)
+
+(defconst gl-point11-x 358)
+(defconst gl-point11-y 359)
+
+(defconst gl-point12-x 360)
+(defconst gl-point12-y 361)
+
+(defconst gl-point13-x 362)
+(defconst gl-point13-y 363)
+
+(defconst gl-point14-x 364)
+(defconst gl-point14-y 365)
+
+(defconst gl-point15-x 366)
+(defconst gl-point15-y 367)
+
+(defconst gl-point16-x 368)
+(defconst gl-point16-y 369)
+;------------------------------------------------
+(defconst gl-random-number 300)
+(defconst gl-selector 301)
+(defconst gl-selector2 302)
+(defconst gl-switch 303)
+(defconst gl-switch2 304)
+(defconst gl-selector3 305)
+;------------------------------------------------
+(defconst gl-fortified-tower-wood-total 400)
+(defconst gl-fortified-tower-food-total 401)
+(defconst gl-fortified-tower-gold-total 402)
+
+(defconst gl-castle-wood-total 403)
+(defconst gl-castle-food-total 404)
+(defconst gl-castle-gold-total 405)
+;------------------------------------------------
+(defconst gl-detection-1 500)
+(defconst gl-detection-2 501)
+(defconst gl-detection-3 502)
+(defconst gl-detection-4 503)
+(defconst gl-detection-5 504)
+(defconst gl-detection-6 505)
+(defconst gl-detection-7 506)
+(defconst gl-detection-8 507)
+(defconst gl-detection-9 508)
+(defconst gl-detection-10 509) 
+(defconst gl-detection-11 510)
+(defconst gl-detection-12 511)
+(defconst gl-detection-13 512)
+(defconst gl-detection-14 513)
+(defconst gl-detection-15 514)
+;------------------------------------------------
+(defconst gl-data-player-1 515)
+(defconst gl-data-player-2 516)
+(defconst gl-data-player-3 517)
+(defconst gl-data-player-4 518)
+(defconst gl-data-player-5 519)
+(defconst gl-data-player-6 520)
+(defconst gl-data-player-7 521)
+(defconst gl-data-player-8 522)
+(defconst gl-data-player-9 523)
+(defconst gl-data-player-10 524) 
+(defconst gl-data-player-11 525)
+(defconst gl-data-player-12 526)
+(defconst gl-data-player-13 527)
+(defconst gl-data-player-14 528)
+(defconst gl-data-player-15 529)
+;------------------------------------------------
+(defconst gl-militia-total 600)
+(defconst gl-spearman-total 601)
+(defconst gl-hoplite-total 602)
+(defconst gl-archer-total 603)
+(defconst gl-skirmisher-total 604)
+(defconst gl-hand-cannoneer-total 605)
+(defconst gl-knight-total 606)
+(defconst gl-light-cav-total 607)
+(defconst gl-chariot-total 608)
+(defconst gl-scorpion-total 609)
+(defconst gl-mangonel-total 610)
+(defconst gl-uu-total 611)
+(defconst gl-monk-total 612)
+(defconst gl-ram-total 613)
+(defconst gl-ca-total 614)
+(defconst gl-war-chariot-total 615)
+(defconst gl-land-army-total 616)
+(defconst gl-warship-total 617)
+
+(defconst gl-scout-ship-total 618)
+(defconst gl-ramming-ship-total 619)
+(defconst gl-arrow-ship-total 620)
+(defconst gl-incendiary-ship-total 621)
+(defconst gl-mangonel-ship-total 622)
+
+;------------------------------------------------
+(defconst gl-cavalry-archer-count 801)
+(defconst gl-cavalry-archer-percent 802)
+(defconst gl-army-count-1 803)
+
+;------------------------------------------------
+(defconst resign 1000)
+;--------------------------------------
+; Timers
+;--------------------------------------
+(defconst timer-tribute 1)
+(defconst timer-attack 2)
+(defconst timer-retreat 3)
+(defconst timer-scouting 4)
+(defconst timer-tribute2 5)
+(defconst timer-wave 6)
+(defconst timer-resign 7)
+(defconst threesec 8)
+(defconst two-mins 9)
+(defconst timer-attack2 10)
+(defconst timer-attack3 11)
+(defconst timer-landing 12)
+(defconst timer-wave4 13)
+(defconst timer-wave2 14)
+(defconst timer-wave3 15)
+;--------------------------------------
+; Groups
+;--------------------------------------
+(defconst group1 1)
+(defconst group2 2)
+(defconst group3 3)
+(defconst group4 4)
+(defconst group5 5)
+(defconst group6 6)
+;--------------------------------------
+; Define ObjectData Constants
+;--------------------------------------
+(defconst object-data-index -1)				;only use with up-remove-objects
+(defconst object-data-id 0)
+(defconst object-data-type 1)
+(defconst object-data-class 2)
+(defconst object-data-category 3)
+(defconst object-data-cmdid 4)
+(defconst object-data-action 5)
+(defconst object-data-order 6)
+(defconst object-data-target 7)
+(defconst object-data-point-x 8)
+(defconst object-data-point-y 9)
+(defconst object-data-hitpoints 10)
+(defconst object-data-maxhp 11)
+(defconst object-data-range 12)
+(defconst object-data-speed 13)
+(defconst object-data-dropsite 14)
+(defconst object-data-resource 15)
+(defconst object-data-carry 16)
+(defconst object-data-garrisoned 17)
+(defconst object-data-garrison-count 18)
+(defconst object-data-status 19)			;0:incomplete, 2:active, 3:resource, >=4:inactive
+(defconst object-data-player 20)
+(defconst object-data-attack-stance 21)
+(defconst object-data-action-time 22)
+(defconst object-data-target-id 23)
+(defconst object-data-formation-id 24)
+(defconst object-data-patrolling 25)
+(defconst object-data-strike-armor 26)
+(defconst object-data-pierce-armor 27)
+(defconst object-data-base-attack 28)
+(defconst object-data-locked 29)
+(defconst object-data-garrison-id 30)
+(defconst object-data-train-count 31)
+(defconst object-data-tasks-count 32)		;increased for internal tasks performed on the object (may be more than 1 per event)
+(defconst object-data-attacker-count 33)	;not increased for certain situations like hunting
+(defconst object-data-attacker-id 34)		;not set for certain situations like hunting
+(defconst object-data-under-attack 35)		;not set for certain situations like hunting
+(defconst object-data-attack-timer 36)		;resets to 60s for each attack (buildings only)
+(defconst object-data-point-z 37)
+(defconst object-data-precise-x 38)		;point x100.0
+(defconst object-data-precise-y 39)
+(defconst object-data-precise-z 40)
+(defconst object-data-researching 41)
+(defconst object-data-tile-position 42)		;match with sn-target-point-adjustment
+(defconst object-data-tile-inverse 43)
+(defconst object-data-distance 44)		;based on target-point
+(defconst object-data-precise-distance 45)	;distance x100
+(defconst object-data-full-distance 46)
+(defconst object-data-map-zone-id 47)
+(defconst object-data-on-mainland 48)		;compares map-zone-id to home TC map-zone-id
+(defconst object-data-idling 49)
+(defconst object-data-move-x 50)
+(defconst object-data-move-y 51)
+(defconst object-data-precise-move-x 52)
+(defconst object-data-precise-move-y 53)
+(defconst object-data-reload-time 54)		;in milliseconds
+(defconst object-data-next-attack 55)		;in milliseconds
+(defconst object-data-train-site 56)
+(defconst object-data-train-time 57)		;in seconds
+(defconst object-data-blast-radius 58)		;radius x100.0
+(defconst object-data-blast-level 59)
+(defconst object-data-progress-type 60)
+(defconst object-data-progress-value 61)
+(defconst object-data-min-range 62)
+(defconst object-data-target-time 63)		;in milliseconds (not for villagers)
+(defconst object-data-heresy 64)		;checks amount-heresy
+(defconst object-data-faith 65)			;checks amount-convert-resistance
+(defconst object-data-redemption 66)		;checks amount-convert-building
+(defconst object-data-atonement 67)		;checks amount-convert-priest
+(defconst object-data-theocracy 68)		;checks amount-theocracy
+(defconst object-data-spies 69)			;checks amount-spies
+(defconst object-data-ballistics 70)
+(defconst object-data-gather-type 71)		;food, wood, gold, stone, or -1 for none
+(defconst object-data-language-id 72)		;can use to check villager types
+(defconst object-data-group-flag 73)		;group id from 0 to 9 or -2 for none
+(defconst object-data-hero-flags 74)		;combined hero status flags
+(defconst object-data-hero 75)			;has actual hero flag set
+(defconst object-data-auto-heal 76)		;will hero heal (non-berserk)
+(defconst object-data-no-convert 77)		;cannot be converted
+(defconst object-data-frame-delay 78)		;number of frames for projectile delay
+(defconst object-data-attack-count 79)		;consecutive attack count
+(defconst object-data-to-precise 80)		;precise distance to a precise target-point
+(defconst object-data-base-type 81)		;object base type id
+(defconst object-data-upgrade-type 82)		;object upgrade type id
+(defconst object-data-ownership 83)
+(defconst object-data-capture-flag 84)
+
+(defconst action-attack-move 19)
+(defconst action-transform 20)
+(defconst actionid-move 610)
+;------------------------------------------------
+;ratha weapon swap
+(defconst temporary-goal 2000)
+(defconst temporary-goal2 2001)
+(defconst temporary-goal3 2002)
+(defconst temporary-goal4 2003)
+(defconst temporary-goal5 2004)
+(defconst temporary-goal6 2005)
+(defconst temporary-goal7 2006)
+(defconst temporary-goal8 2007)
+(defconst temporary-goal9 2008)
+(defconst point-x 2009)
+(defconst point-y 2010)
+

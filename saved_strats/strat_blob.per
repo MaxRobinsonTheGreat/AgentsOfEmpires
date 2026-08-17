@@ -1,0 +1,24 @@
+; strat_blob.per - vanilla attack-group pulse ("blob")
+; Everyone charges as one giant group, re-issued every 8s so groups retarget.
+
+(defrule
+    (true)
+=>
+    (up-change-name "blob")
+    (set-strategic-number sn-number-attack-groups 40)
+    (set-strategic-number sn-minimum-attack-group-size 1)
+    (set-strategic-number sn-maximum-attack-group-size 200)
+    (set-strategic-number sn-percent-attack-soldiers 100)
+    (set-strategic-number sn-attack-intelligence 1)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (enable-timer 1 8)
+    (disable-self)
+)
+
+(defrule
+    (timer-triggered 1)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (attack-now)
+    (enable-timer 1 8)
+)

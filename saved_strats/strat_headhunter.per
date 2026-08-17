@@ -1,0 +1,37 @@
+; strat_headhunter.per - whole army focus-fires enemy siege ("headhunter")
+; The Siege Onager is the only unit that can wipe a clumped army - kill it first,
+; then the Heavy Scorpions, then fall back to a general charge.
+
+(defrule
+    (true)
+=>
+    (up-change-name "headhunter")
+    (set-strategic-number sn-number-attack-groups 40)
+    (set-strategic-number sn-minimum-attack-group-size 1)
+    (set-strategic-number sn-maximum-attack-group-size 200)
+    (set-strategic-number sn-percent-attack-soldiers 100)
+    (set-strategic-number sn-attack-intelligence 1)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (enable-timer 1 5)
+    (disable-self)
+)
+
+(defrule
+    (timer-triggered 1)
+    (up-find-remote c: siege-weapon-class c: 1)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: all-units-class c: 100)
+    (up-target-objects 1 action-default -1 -1)
+    (enable-timer 1 4)
+)
+
+(defrule
+    (timer-triggered 1)
+    (not (up-find-remote c: siege-weapon-class c: 1))
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (attack-now)
+    (enable-timer 1 8)
+)

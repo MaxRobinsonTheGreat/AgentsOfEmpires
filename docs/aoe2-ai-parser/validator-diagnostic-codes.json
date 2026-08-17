@@ -1,0 +1,582 @@
+{
+  "title": "Validator Diagnostic Codes",
+  "intro": [
+    "Generated from `validator-diagnostic-codes.json`; edit the JSON and run `npm run generate:diagnostic-registry`. The same command also syncs the editor extension copy at `extensions/aoe2-ai-parser-extension/data/diagnostic-codes.json`.",
+    "",
+    "This is the registry for `aoe2_ai_lab` lint and package-integrity issue codes.",
+    "Use it when triaging `lint --json`, `lint-package --json`, Markdown reports, or VS Code/Cursor diagnostics.",
+    "",
+    "Severity is the default validator severity. Confidence is per occurrence: `definite` for definitely reachable code and `conditional` when the finding is inside an unknown preprocessor branch.",
+    "",
+    "Editor actions describe the current local VS Code/Cursor extension behavior:",
+    "",
+    "- `quick fix`: an edit action may be offered.",
+    "- `explain`: a non-editing explanation action may be offered.",
+    "- `none`: no code action is currently wired."
+  ],
+  "corpus_suppressed": [
+    "builtin-constant-alias",
+    "duplicate-defconst-conflict",
+    "load-random-plus-weight-de-behavior",
+    "redundant-built-in-defconst",
+    "repeat-chat",
+    "up-can-build-zero-escrow"
+  ],
+  "profile_suppression_note": "Manual `--suppress-code <code>` can suppress any finding code for one lint run. Package-integrity codes are not suppressible through linter profile suppression.",
+  "codes": [
+    {
+      "code": "bad-set-goal",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "`set-goal` is missing either the goal id or value."
+    },
+    {
+      "code": "builtin-constant-alias",
+      "source": "lint",
+      "severity": "info",
+      "corpus": "suppressed",
+      "cursor_action": "none",
+      "meaning": "A local `class-*` constant aliases a documented built-in class id or built-in class symbol. Prefer the built-in name."
+    },
+    {
+      "code": "command-argument-mismatch",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "quick fix, explain",
+      "meaning": "A command argument does not match a known registry parameter family. This can be a real bug or a registry coverage gap."
+    },
+    {
+      "code": "command-family-mismatch",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A command argument is in a direct id slot but its symbol name strongly suggests a different family, such as an `sn-*` strategic number in a `GoalId` slot."
+    },
+    {
+      "code": "command-numeric-range-mismatch",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A literal numeric command argument or resolved integer `defconst` is outside an explicit documented range for that parameter, such as `0` in a `GoalId` slot documented as `1 to 16000`."
+    },
+    {
+      "code": "command-arity-mismatch",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A schema-validated command has the wrong number of arguments."
+    },
+    {
+      "code": "complex-single-line-defrule",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A long single-line `defrule` is risky because DE can reject it unpredictably even when the repo parser accepts it. Expand the rule across multiple lines."
+    },
+    {
+      "code": "command-role-mismatch",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A command documented as Fact/Action/FactAction is used in the wrong rule side or nested context."
+    },
+    {
+      "code": "command-typed-prefix-mismatch",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "quick fix, explain",
+      "meaning": "A `typeOp` slot received a math/compare operator such as `g:=` instead of a plain type prefix such as `g:`."
+    },
+    {
+      "code": "command-typed-operand-mismatch",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A valid typed prefix or typed operator is followed by an operand whose name strongly suggests a different type, such as `g:` or `g:=` before an `sn-*` strategic number."
+    },
+    {
+      "code": "defrule-missing-arrow",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A `defrule` closed without an `=>` separator."
+    },
+    {
+      "code": "defconst-alias-cycle",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A set of `defconst` aliases forms a cycle, so the constants cannot resolve to a numeric value."
+    },
+    {
+      "code": "defconst-value-out-of-range",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A numeric `defconst` value is outside the observed signed 32-bit range of -2147483648 to 2147483647. AoE2 DE validated one-step overflow values as loading but clamping to the nearest signed-32 boundary.",
+      "references": [
+        {
+          "label": "Internal validation notes",
+          "path": "internal-validation-notes.md",
+          "anchor": "defconst-numeric-range"
+        },
+        {
+          "label": "AIRef Data Limits",
+          "url": "https://airef.github.io/resources/articles/data-limits.html"
+        }
+      ]
+    },
+    {
+      "code": "duplicate-preprocessor-else",
+      "source": "preprocessor",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "One `#load-if-defined` or `#load-if-not-defined` block contains more than one `#else`."
+    },
+    {
+      "code": "duplicate-root-target",
+      "source": "integrity",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "Multiple `.ai` files resolve to the same root `.per`. This can be intentional for personalities but should be explicit."
+    },
+    {
+      "code": "duplicate-ai-name",
+      "source": "integrity",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "Multiple `.ai` files have the same case-insensitive display name. This can confuse package users and launcher/editor selection."
+    },
+    {
+      "code": "duplicate-load-target",
+      "source": "integrity",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "One `.ai` file loads the same resolved `.per` root more than once. This may be intentional, but it usually indicates a redundant or mistaken package manifest entry."
+    },
+    {
+      "code": "duplicate-include-target",
+      "source": "package lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "One reachable `.per` file includes the same resolved `.xs` file more than once. This may be intentional when relying on top-level XS side effects, but is usually redundant."
+    },
+    {
+      "code": "duplicate-per-load-target",
+      "source": "package lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "One reachable `.per` file loads the same resolved `.per` file more than once. This may be intentional, but usually indicates a redundant or mistaken load directive."
+    },
+    {
+      "code": "duplicate-per-name",
+      "source": "integrity",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "Multiple `.per` files have the same case-insensitive basename. This is legal in subfolders, but it can confuse package review, load-target completion, and human navigation."
+    },
+    {
+      "code": "duplicate-defconst-conflict",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "suppressed",
+      "cursor_action": "none",
+      "meaning": "A definitely active file assigns two different parsed values to the same `defconst` name."
+    },
+    {
+      "code": "empty-action",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A rule has no actions after `=>`."
+    },
+    {
+      "code": "empty-fact",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A rule has no facts before `=>`."
+    },
+    {
+      "code": "include-missing-xs-extension",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "An AI `include` directive has a quoted target that does not include the required `.xs` file extension."
+    },
+    {
+      "code": "livestock-default-point",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "Livestock targeting uses `action-default` where `action-move` is usually expected."
+    },
+    {
+      "code": "logical-operator-arity-mismatch",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A logical operator has the wrong number of direct child facts. `not` expects one child fact; binary operators such as `and` and `or` expect two."
+    },
+    {
+      "code": "load-cycle",
+      "source": "package lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "The reachable load graph cycles back to an already-active `.per` file."
+    },
+    {
+      "code": "load-depth-exceeded",
+      "source": "package lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "The reachable load graph exceeds the documented maximum nested load depth of 10."
+    },
+    {
+      "code": "malformed-preprocessor-directive",
+      "source": "preprocessor",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A preprocessor directive has invalid syntax, such as a missing condition token."
+    },
+    {
+      "code": "preprocessor-nesting-depth-exceeded",
+      "source": "preprocessor",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "`#load-if-defined` and `#load-if-not-defined` conditionals are nested more than the documented maximum of 50 levels."
+    },
+    {
+      "code": "malformed-defconst",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A `defconst` declaration is structurally invalid, such as a missing name, missing value, unterminated quoted text value, or multiple unquoted value tokens."
+    },
+    {
+      "code": "malformed-include-directive",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "An `include` directive is structurally invalid, usually because its target is not quoted."
+    },
+    {
+      "code": "malformed-load-directive",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A `load` or `#load` directive is structurally invalid, usually because its target is not quoted."
+    },
+    {
+      "code": "malformed-load-random-directive",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A `load-random` directive has a structurally invalid entry. Entries should be an optional weight followed by a quoted target."
+    },
+    {
+      "code": "load-random-plus-weight-de-behavior",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "suppressed",
+      "cursor_action": "none",
+      "meaning": "A `load-random` entry uses a `+` weight form. AIRef documents this as UserPatch syntax and notes uncertain or bugged DE behavior."
+    },
+    {
+      "code": "load-after-include",
+      "source": "package lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A reachable `.per` file has a `load` or `load-random` directive after an `include` directive. AIRef documents that load directives should be placed before include directives."
+    },
+    {
+      "code": "missing-include-target",
+      "source": "package lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "An `(include \"...\")` target could not be resolved."
+    },
+    {
+      "code": "missing-load-target",
+      "source": "package lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "quick fix, explain",
+      "meaning": "A `(load \"...\")` or `#load` target could not be resolved."
+    },
+    {
+      "code": "non-de-symbol",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A symbol is known from archived AIRef/game-string data, but is not marked as DE-compatible in the local DE reference registry."
+    },
+    {
+      "code": "raw-load-in-per",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A raw `#load` directive appears in an installed `.per`; assemble components before install."
+    },
+    {
+      "code": "redundant-built-in-defconst",
+      "source": "lint",
+      "severity": "info",
+      "corpus": "suppressed",
+      "cursor_action": "quick fix, explain",
+      "meaning": "A local `defconst` redefines a documented built-in class constant by the same name."
+    },
+    {
+      "code": "repeat-chat",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "suppressed",
+      "cursor_action": "explain",
+      "meaning": "A chat action may repeat every rule pass because the rule is not disabled or guarded."
+    },
+    {
+      "code": "rule-too-long",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A rule exceeds DE's 32 element limit for facts/actions/logical operators."
+    },
+    {
+      "code": "split-typed-comparison",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A typed comparison was split, such as `< g:` instead of `g:<`."
+    },
+    {
+      "code": "site-specific-train-alias-requires-defconst",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A site-specific train-target alias is not a built-in identifier in DE and must be declared with its required `defconst` value before direct `can-train` or `train` use."
+    },
+    {
+      "code": "site-specific-train-alias-requires-defconst-warning",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A site-specific train-target alias appears after `c:` but is not known as a built-in typed constant; declare its required `defconst` value before using it in DUC train actions."
+    },
+    {
+      "code": "source-line-too-long",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A source line exceeds the documented 255-character AI script line limit, including comments."
+    },
+    {
+      "code": "stale-ai-root",
+      "source": "integrity",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "An `.ai` file did not resolve to any root `.per`."
+    },
+    {
+      "code": "unbalanced-parentheses",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "Parentheses close too early or the file is missing closing parentheses."
+    },
+    {
+      "code": "undefined-constant",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "quick fix",
+      "meaning": "A value after `c:` is not a known built-in, documented value, or reachable `defconst`."
+    },
+    {
+      "code": "unvalidated-action-train-target",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A symbol is locally validated for some train contexts but is not validated as an `up-target-point ... action-train c:` target."
+    },
+    {
+      "code": "unvalidated-train-target",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A symbol is known in local validation notes, but is not validated for the current direct or dynamic train-target context."
+    },
+    {
+      "code": "undefined-identifier",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "quick fix",
+      "meaning": "A token looks like an AoE identifier but is not known in reachable constants or local reference data."
+    },
+    {
+      "code": "undefined-position-constant",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "quick fix",
+      "meaning": "A position token used by `up-get-point` is not a built-in or reachable `defconst`."
+    },
+    {
+      "code": "undefined-strategic-number",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "quick fix",
+      "meaning": "A strategic-number token is not in the local DE SN registry or reachable constants."
+    },
+    {
+      "code": "unexpected-preprocessor-else",
+      "source": "preprocessor",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "`#else` appears without a matching active preprocessor conditional."
+    },
+    {
+      "code": "unexpected-preprocessor-end-if",
+      "source": "preprocessor",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "`#end-if` appears without a matching active preprocessor conditional."
+    },
+    {
+      "code": "unreachable-per-file",
+      "source": "integrity",
+      "severity": "info",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A `.per` file exists in the package but is not reachable from any resolved `.ai` root."
+    },
+    {
+      "code": "unsafe-goal-block",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A command writes a block of goals too low in the goal range; use safer higher goals."
+    },
+    {
+      "code": "unsafe-set-target-object",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "`up-set-target-object` reads a search list before retained search evidence proves that list was rebuilt."
+    },
+    {
+      "code": "unscoped-duc-target",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "A DUC target command runs without retained evidence that local target objects exist."
+    },
+    {
+      "code": "unsupported-ai-xs-function",
+      "source": "XS lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "An XS function is known to be rejected by the AoE2 DE AI XS parser."
+    },
+    {
+      "code": "xs-script-call-parameterized-function",
+      "source": "package lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "`xs-script-call` targets an included XS function that has one or more parameters. AI scripts can only call zero-parameter XS functions."
+    },
+    {
+      "code": "unterminated-defrule",
+      "source": "lint",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A new `defrule` starts before the previous one closed."
+    },
+    {
+      "code": "unterminated-preprocessor-conditional",
+      "source": "preprocessor",
+      "severity": "error",
+      "corpus": "active",
+      "cursor_action": "none",
+      "meaning": "A preprocessor conditional is missing its matching `#end-if`."
+    },
+    {
+      "code": "up-build-place-point-coordinate-as-escrow",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "active",
+      "cursor_action": "explain",
+      "meaning": "`up-build place-point` uses the current target point; its third argument is still escrow state, not a coordinate."
+    },
+    {
+      "code": "up-can-build-zero-escrow",
+      "source": "lint",
+      "severity": "warning",
+      "corpus": "suppressed",
+      "cursor_action": "explain",
+      "meaning": "`up-can-build` uses literal `0` for escrow state; project scripts should prefer a named `without-escrow` goal."
+    }
+  ],
+  "triage_notes": [
+    "Start package triage from top-level `issue_groups` in `lint-package --json`.",
+    "Treat `command-argument-mismatch`, `unsafe-set-target-object`, and `unscoped-duc-target` as review prompts unless the surrounding script context clearly proves a bug.",
+    "Treat `stale-ai-root` as a package failure by default.",
+    "Treat `duplicate-root-target` as warning-level package hygiene; community AI personalities can intentionally share a root script.",
+    "Treat `unreachable-per-file` as info unless you are pruning package files or enforcing a release package."
+  ]
+}

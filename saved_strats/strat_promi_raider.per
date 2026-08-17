@@ -1,0 +1,76 @@
+; strat_promi_raider.per - faster, heavier, onager-only surgical strike
+; Six Mounted Samurai launch at 3s instead of lancer's four at 5s. Once the
+; enemy Siege Onager dies, custom control stops: no deep scorpion chase through
+; pikes, and all surviving cavalry return to Promisory's normal combat logic.
+
+(load "Promisory\defaultConstants")
+(load "Promisory\finalingConstants")
+(load "Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "Promisory\init")
+(load "Promisory\threats")
+(load "Promisory\escrow")
+(load "Promisory\dawn")
+(load "Promisory\gatherers")
+(load "Promisory\scoutcontrol")
+(load "Promisory\tsa")
+(load "Promisory\watercontrol")
+(load "Promisory\general")
+(load "Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "Promisory\researches")
+(load "Promisory\interaction")
+(load "Promisory\buildings")
+(load "Promisory\units")
+(load "Promisory\trade")
+(load "Promisory\resign")
+#else
+(load "Promisory\finaling")
+#end-if
+(load "Promisory\event")
+
+(defrule
+    (true)
+=>
+    (up-change-name "promi-raider")
+    (enable-timer 50 3)
+    (disable-self)
+)
+
+(defrule
+    (true)
+=>
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)
+
+(defrule
+    (timer-triggered 50)
+=>
+    (up-full-reset-search)
+)
+
+; Fast onager kill. If no onager is visible/alive this rule simply does nothing.
+(defrule
+    (timer-triggered 50)
+    (up-find-remote c: siege-onager c: 1)
+=>
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 6)
+    (up-target-objects 1 action-default formation-stagger stance-aggressive)
+)
+
+(defrule
+    (timer-triggered 50)
+=>
+    (enable-timer 50 3)
+)
+
+(include "ailib/Geometry.xs")

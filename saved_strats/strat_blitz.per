@@ -1,0 +1,75 @@
+; strat_blitz.per - Promisory + early man-at-arms pressure layer ("blitz")
+; Thesis: snowball before promi-mix assembles its first mixed wave. Extra feudal
+; barracks + constant M@A production, then longswords/champions + rams.
+; KEY MECHANISM: Promisory treats taunt 31 from my-player-number as an "attack now!"
+; order (tsa.per) with a LOW threshold (military-population >= 15) - it then runs its
+; own well-microed attack machinery. We re-taunt every 45s (Promisory acknowledges
+; and clears the taunt each time it processes one). Timer 50 is the only id (1-50)
+; not used by Promisory.
+
+(defrule (true) => (up-change-name "blitz") (enable-timer 50 45) (disable-self))
+
+; --- forced early aggression via Promisory's own attack trigger ---
+(defrule (timer-triggered 50) (military-population >= 10) => (taunt 31) (enable-timer 50 45))
+(defrule (timer-triggered 50) => (enable-timer 50 45))
+
+; --- buildings ---
+(defrule (current-age >= feudal-age) (building-type-count barracks < 3) (can-build barracks) => (build barracks))
+(defrule (current-age >= castle-age) (building-type-count siege-workshop < 1) (can-build siege-workshop) => (build siege-workshop))
+
+; --- army: militia line all game, rams for buildings ---
+(defrule (current-age == feudal-age) (unit-type-count-total militiaman-line < 14) (can-train militiaman-line) => (train militiaman-line))
+(defrule (current-age >= castle-age) (unit-type-count-total militiaman-line < 24) (can-train militiaman-line) => (train militiaman-line))
+(defrule (current-age >= castle-age) (unit-type-count-total battering-ram-line < 3) (can-train battering-ram-line) => (train battering-ram-line))
+
+; --- research priorities (infantry chain, blacksmith melee, ram upgrade) ---
+(defrule (can-research ri-man-at-arms) => (research ri-man-at-arms))
+(defrule (can-research ri-long-swordsman) => (research ri-long-swordsman))
+(defrule (can-research ri-two-handed-swordsman) => (research ri-two-handed-swordsman))
+(defrule (can-research ri-champion) => (research ri-champion))
+(defrule (can-research ri-forging) => (research ri-forging))
+(defrule (can-research ri-iron-casting) => (research ri-iron-casting))
+(defrule (can-research ri-blast-furnace) => (research ri-blast-furnace))
+(defrule (can-research ri-scale-mail) => (research ri-scale-mail))
+(defrule (can-research ri-chain-mail) => (research ri-chain-mail))
+(defrule (can-research ri-plate-mail) => (research ri-plate-mail))
+(defrule (can-research ri-gambesons) => (research ri-gambesons))
+(defrule (can-research ri-squires) => (research ri-squires))
+(defrule (can-research ri-arson) => (research ri-arson))
+(defrule (can-research ri-capped-ram) => (research ri-capped-ram))
+
+(load "Promisory\defaultConstants")
+(load "Promisory\finalingConstants")
+(load "Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "Promisory\init")
+(load "Promisory\threats")
+(load "Promisory\escrow")
+(load "Promisory\dawn")
+(load "Promisory\gatherers")
+(load "Promisory\scoutcontrol")
+(load "Promisory\tsa")
+(load "Promisory\watercontrol")
+(load "Promisory\general")
+(load "Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "Promisory\researches")
+(load "Promisory\interaction")
+(load "Promisory\buildings")
+(load "Promisory\units")
+(load "Promisory\trade")
+(load "Promisory\resign")
+#else
+(load "Promisory\finaling")
+#end-if
+(load "Promisory\event")
+
+(include "ailib/Geometry.xs")

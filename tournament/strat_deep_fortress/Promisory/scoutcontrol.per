@@ -1,0 +1,1342 @@
+
+(defrule
+   (or(strategic-number sn-turn-count < 30)
+   (timer-triggered fifteensec))
+=>
+   (set-goal modern-scout-micro no)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (game-time < 1800)
+   (up-compare-sn turn-time-estimate < 400)
+   (unit-type-count scout-cavalry-line > 2)
+   (up-compare-const diff-fp == 1)
+   (up-group-size c: ranged-group1 < 5)
+   (unit-type-count knight-line < 1)
+=>
+   (set-goal modern-scout-micro yes)
+)
+
+(defrule
+   (up-compare-goal scout-jump-id < 1)
+=>
+   (up-jump-rule 1)
+)
+
+(defrule
+   (goal modern-scout-micro no)
+=>
+   (up-jump-direct g: scout-jump-id)
+)
+
+(defrule
+   (current-age == feudal-age)
+   (game-time > 5)
+=>
+   (xs-script-call "VerifyLoad")
+   (disable-self)
+)
+
+
+(defrule
+   (timer-triggered two-mins)
+   (random-number < 95)
+=>
+   (up-find-player enemy find-closest temporary-goal)
+   (up-modify-sn sn-target-player-number g:= temporary-goal)
+)
+
+(defrule
+   (timer-triggered two-mins)
+   (random-number >= 95)
+=>
+   (up-find-player enemy find-random temporary-goal)
+   (up-modify-sn sn-target-player-number g:= temporary-goal)
+)
+
+(defrule 
+   (game-time > 2)
+=>
+   (up-find-player enemy find-closest temporary-goal)
+   (set-strategic-number sn-target-player-number 2)
+   (set-strategic-number sn-focus-player-number 2)
+   (up-find-remote c: town-center c: 1)
+   (up-set-target-object search-remote c: 0)
+   (up-get-point position-object enemy-x)
+   (up-get-point position-self position-self-x)
+   ;(up-send-flare enemy-x)
+   (set-goal scout-waypoint 0)
+   (set-goal scout-waypoint-x 0)
+   (set-goal scout-waypoint-y 0)
+   (set-goal movement-direction 1)
+   (up-bound-point scout-group-x position-self-x)
+   (set-goal previous-scout-group-x 0)
+   (set-goal previous-scout-group-y 0)
+   (set-goal scout-formation formation-line)
+   (set-goal modern-scout-micro yes)
+   (set-goal scout-action 0)
+   (set-goal temporary-goal9 50)
+   (set-strategic-number sn-initial-exploration-required 0)
+   (disable-self)
+)
+
+(defrule
+   (goal modern-scout-micro no)
+=>
+   (up-jump-rule 60)
+)
+
+(defrule
+   (players-building-type-count target-player town-center < 1)
+=>
+   (up-get-point position-flank enemy-x)
+)
+
+(defrule
+   (players-building-type-count target-player town-center > 0)
+=>
+   (up-full-reset-search)
+   (up-find-remote c: town-center c: 1)
+   (up-set-target-object search-remote c: 0)
+   (up-get-point position-object enemy-x)
+)
+
+(defrule
+   (true)
+=>
+   (set-goal temporary-goal3 0)
+   (set-goal temporary-goal2 0)
+   (set-goal temporary-goal 0)
+   (set-goal scout-sup 0)
+   (set-goal enemy-str 0)
+   (set-goal scout-str 0)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 < 2)
+   (unit-type-count scout-cavalry > 2)
+   (up-timer-status 6 != timer-running)
+=>
+   (up-full-reset-search)
+   (up-find-local c: scout-cavalry c: 40)
+   (up-target-point position-self-x action-move -1 -1)
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 15)
+)
+;Create group
+
+(defrule
+   (goal modern-scout-micro yes)
+   (unit-type-count scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 2)
+   ;(up-group-size c: 12 < 1)
+=>
+   (up-full-reset-search)
+   (up-find-local c: scout-cavalry-line c: 40)
+   (up-set-target-point scout-group-x)
+   (up-clean-search search-local object-data-distance search-order-asc)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (unit-type-count scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 2)
+   ;(up-group-size c: 12 < 1)
+   (up-set-target-object search-local c: 0)
+=>
+   (up-get-point position-object point-x)
+   (up-set-target-point point-x)
+   (up-full-reset-search)
+   (up-filter-distance c: -1 c: 7)
+   (up-find-local c: scout-cavalry c: 40)
+   (up-modify-group-flag 0 c: 12)
+   (up-reset-group c: 12)
+   (up-create-group 0 0 c: 12)
+   (up-modify-group-flag 1 c: 12)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 1)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (set-goal temporary-goal3 0)
+   (set-goal point-x 0)
+   (set-goal point-y 0)
+   (set-goal scout-group-x 0)
+   (set-goal scout-group-y 0)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 1)
+   (up-set-target-object search-local c: 0)
+   (up-compare-goal temporary-goal3 < 20)
+=>
+   (up-get-point position-object point-x)
+   (up-modify-goal scout-group-x g:+ point-x)
+   (up-modify-goal scout-group-y g:+ point-y)
+   (up-remove-objects search-local -1 c:== 0)
+   (up-modify-goal temporary-goal3 c:+ 1)
+   (up-jump-rule -1)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 1)
+=>
+   (up-modify-goal scout-group-x g:/ temporary-goal3)
+   (up-modify-goal scout-group-y g:/ temporary-goal3)
+)
+
+;Analyze path to group to make sure it is safe
+;We break it down into four quartersteps and analyze whether there is a TC, a massive group of spears/archers, a castle
+(defrule
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 3)
+   (strategic-number sn-twenty-turns == 12)
+=>
+   (up-full-reset-search)
+   (set-goal temporary-goal 20)
+   (set-strategic-number sn-focus-player-number 1)
+   (set-goal remote-total 0)
+   (set-goal temporary-goal3 0)
+)
+
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 3)
+   (player-valid focus-player)
+   (players-stance focus-player enemy)
+   (up-compare-goal temporary-goal < 100)
+   (strategic-number sn-focus-player-number <= max-players)
+   (up-compare-goal remote-total < 1)
+   (up-compare-goal temporary-goal3 < 1)
+=>
+   (up-full-reset-search)
+   (up-bound-point point-x position-self-x)
+   (up-lerp-percent point-x enemy-x g: temporary-goal)
+   (up-filter-distance c: -1 c: 9);7
+   (up-find-remote c: archer c: 25)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total c:- 10)
+   (up-modify-goal remote-total c:max 0)
+   (up-modify-goal temporary-goal3 g:max remote-total)
+   (up-find-remote c: spearman-line c: 1)
+   (up-find-remote c: town-center c: 1)
+   (up-find-remote c: castle c: 1)
+   (up-get-search-state local-total)
+   ;(up-jump-rule -1)
+)
+
+
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 3)
+   (player-valid focus-player)
+   ;(players-stance focus-player enemy)
+   (up-compare-goal temporary-goal < 100)
+   (strategic-number sn-focus-player-number <= max-players)
+=>
+   (up-modify-sn sn-focus-player-number c:+ 1)
+   (up-jump-rule -2)
+)
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 > 3)
+   (player-valid focus-player)
+   (players-stance focus-player enemy)
+   (up-compare-goal temporary-goal < 100)
+   (strategic-number sn-focus-player-number <= max-players)
+   (up-compare-goal temporary-goal3 < 1)
+   (up-compare-goal remote-total < 1)
+=>
+   (up-modify-goal temporary-goal c:+ 20)
+   (up-jump-rule -3)
+)
+
+(defrule 
+   (or(timer-triggered one-min)
+   (or(up-group-size c: 12 < 4)
+   (and(up-compare-goal temporary-goal3 < 1)
+   (and(up-compare-goal remote-total < 1)
+   (strategic-number sn-twenty-turns == 12)))))
+=>
+   (set-goal multi-group-reinforcing no)
+)
+
+;This works but the performance impact is too costly
+
+; (defrule
+;    (strategic-number sn-twenty-turns == 12)
+;    (goal modern-scout-micro yes)
+;    (up-group-size c: 12 > 3)
+;    (or(up-compare-goal temporary-goal3 > 0)
+;    (up-compare-goal remote-total > 0))
+;    (up-set-target-object search-remote c: 0)
+; =>
+;    (set-goal multi-group-reinforcing yes)
+; )
+
+;Obtain pivot point
+
+;We generate two candidate points which are 90 and 270 degree rotations around the obstacle
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal multi-group-reinforcing yes)
+   (up-set-target-object search-remote c: 0);The search previously shouldn't be cleared
+=>
+   (up-get-point position-object input-origin-x)
+   (up-bound-point input-point-x position-self-x)
+   (up-bound-point point2-x position-self-x)
+   (set-goal input-angleRad 1570);pi/2 radians
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point point-x input-point-x)
+   (up-bound-point input-point-x position-self-x)
+   (set-goal input-angleRad 4711);3pi/2 radians
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point point2-x input-point-x);Consider moving these points closer to the obstacle - could be weird on a giant map
+   (up-get-point-distance point-x scout-group-x temporary-goal4)
+   (up-get-point-distance point2-x scout-group-x temporary-goal5)
+)
+
+;Lerp to within 30 tiles
+
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal multi-group-reinforcing yes)
+   (up-point-distance point-x input-origin-x > 30)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-bound-point point-x point-x)
+   (up-lerp-tiles point-x input-origin-x c: 4)
+   (up-jump-rule -1)
+)
+
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal multi-group-reinforcing yes)
+   (up-point-distance point2-x input-origin-x > 30)
+   (up-set-target-object search-remote c: 0)
+=>
+   (up-bound-point point2-x point2-x)
+   (up-lerp-tiles point2-x input-origin-x c: 4)
+   (up-jump-rule -1)
+)
+;Pick the point that is closer
+(defrule
+   (strategic-number sn-twenty-turns == 12)
+   (goal multi-group-reinforcing yes)
+   (up-compare-goal temporary-goal4 g:>= temporary-goal5)
+=>
+   (up-bound-point pivot-point-x point-x)
+   ;(up-send-flare pivot-point-x)
+)
+
+(defrule
+   (up-compare-goal temporary-goal4 g:< temporary-goal5)
+   (strategic-number sn-twenty-turns == 12)
+   (goal multi-group-reinforcing yes)
+=>
+   (up-bound-point pivot-point-x point2-x)
+   ;(up-send-flare pivot-point-x)
+)
+;Task units not in group to group
+
+
+
+; (defrule
+;    (goal modern-scout-micro yes)
+;    (unit-type-count-total scout-cavalry-line > 1)
+;    (strategic-number sn-five-turns == 3)
+;    (up-compare-goal scout-group-x > 1)
+;    (up-compare-goal scout-group-y > 1)
+; =>
+;    (up-full-reset-search)
+;    (up-find-local c: scout-cavalry-line c: 40)
+;    (up-set-target-point scout-group-x)
+;    (up-filter-distance c: 60 c: -1)
+;    (up-remove-objects search-local object-data-group-flag == 12)
+;    (up-bound-point point-x scout-group-x)
+;    (up-lerp-tiles point-x enemy-x c:- 15)
+;    (up-bound-point point-x point-x)
+;    (up-target-point point-x action-move -1 stance-no-attack)
+; )
+
+(defrule
+   (goal modern-scout-micro yes)
+   (goal multi-group-reinforcing no)
+   (unit-type-count-total scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 3)
+   ;(up-compare-goal scout-group-x > 1)
+   ;(up-compare-goal scout-group-y > 1)
+=>
+   (up-full-reset-search)
+   (up-find-local c: scout-cavalry-line c: 40)
+   (up-set-target-point scout-group-x)
+   ;(up-filter-distance c: -1 c: 80)
+   (up-remove-objects search-local object-data-group-flag == 12)
+   (up-target-point scout-group-x action-move -1 stance-no-attack)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (goal multi-group-reinforcing yes)
+   (unit-type-count-total scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 3)
+   (up-compare-goal scout-group-x > 1)
+   (up-compare-goal scout-group-y > 1)
+=>
+   (up-full-reset-search)
+   (up-find-local c: scout-cavalry-line c: 60)
+   (up-set-target-point scout-group-x)
+
+   (up-remove-objects search-local object-data-group-flag != 13)
+   (up-target-point scout-group-x action-move -1 stance-no-attack)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (goal multi-group-reinforcing yes)
+   (unit-type-count-total scout-cavalry-line > 1)
+   (strategic-number sn-five-turns == 3)
+   (up-compare-goal scout-group-x > 1)
+   (up-compare-goal scout-group-y > 1)
+=>
+   (up-full-reset-search)
+   (up-filter-distance c: -1 c: 80)
+   (up-find-local c: scout-cavalry-line c: 60)
+   (up-set-target-point pivot-point-x)
+   (up-remove-objects search-local object-data-group-flag == 12)
+   (up-remove-objects search-local object-data-group-flag == 13)
+   (up-target-point pivot-point-x action-move -1 stance-no-attack)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (goal multi-group-reinforcing yes)
+   (strategic-number sn-five-turns == 2)
+=>
+   (up-full-reset-search)
+   (up-set-target-point pivot-point-x)
+   (up-filter-distance c: -1 c: 8)
+   (up-set-group search-local c: 13)
+   (up-modify-group-flag 0 c: 13)
+   (up-reset-group c: 13)
+   (up-find-local c: scout-cavalry-line c: 60)
+   (up-clean-search search-local -1 search-order-none);remove duplicates
+   (up-create-group 0 0 c: 13)
+   (up-modify-group-flag 1 c: 13)
+)
+
+
+(defrule
+   (taunt-detected 1 209)
+=>
+   (fe-break-point 1 c:== 1 -1)
+   (disable-self)
+)
+;Calculate waypoints
+
+(defrule
+   (true)
+=>
+   (set-goal scout-radius 20)
+   (disable-self)
+)
+
+(defrule
+   (true)
+=>
+   (up-modify-goal temporary-goal g:= scout-radius)
+   (up-modify-goal temporary-goal c:* 2)
+   (up-modify-goal temporary-goal c:* 3141)
+   (up-modify-goal temporary-goal c:/ 1000);diameter = 2pi r   
+   (up-modify-goal temporary-goal2 g:= temporary-goal)
+   (up-modify-goal temporary-goal2 c:/ 5)
+   (set-goal temporary-goal4 3)
+)
+(defrule
+   (goal scout-waypoint 0)
+=>
+   (up-bound-point scout-waypoint-x enemy-x)
+   (up-lerp-tiles scout-waypoint-x position-self-x g: scout-radius)
+)
+
+(defrule
+   (goal scout-waypoint 1)
+=>
+   ;(fe-break-point 1 c:== 1 -1)
+   (up-bound-point scout-waypoint-x enemy-x)
+   (up-lerp-tiles scout-waypoint-x position-self-x g: scout-radius)
+   ;(up-send-flare scout-waypoint-x)
+   ;(up-cross-tiles scout-waypoint-x enemy-x g: temporary-goal2)
+   ;(set-goal input-angleAU 65535) 
+   (set-goal input-angleRad 6283)
+   ;(up-modify-goal input-angleAU c:/ 5)
+   ;(up-modify-goal input-angleAU c:- 32767)
+   (up-modify-goal input-angleRad c:/ 5)
+   (up-modify-goal input-angleRad c:* 1)
+   (up-copy-point input-origin-x enemy-x)
+   (up-copy-point input-point-x scout-waypoint-x)
+   ;(xs-script-call "RotateByAngle")
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point scout-waypoint-x input-point-x)
+   ;(up-send-flare scout-waypoint-x)
+)
+
+(defrule
+   (goal scout-waypoint 2)
+=>
+   ;(fe-break-point 1 c:== 1 -1)
+   (up-bound-point scout-waypoint-x enemy-x)
+   ;(up-send-flare scout-waypoint-x)
+   (up-lerp-tiles scout-waypoint-x position-self-x g: scout-radius)
+   ;(up-modify-goal temporary-goal2 c:* 2)
+   ;(up-send-flare scout-waypoint-x)
+   (set-goal input-angleRad 6283)
+   (up-modify-goal input-angleRad c:/ 5)
+   (up-modify-goal input-angleRad c:* 2)
+   (up-copy-point input-origin-x enemy-x)
+   (up-copy-point input-point-x scout-waypoint-x)
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point scout-waypoint-x input-point-x)
+   ;(up-cross-tiles scout-waypoint-x enemy-x g: temporary-goal2)
+   ;(up-cross-tiles scout-waypoint-x enemy-x g: temporary-goal2)
+   ;(up-send-flare scout-waypoint-x)
+)
+
+(defrule
+   (goal scout-waypoint -1)
+=>
+   (up-bound-point scout-waypoint-x enemy-x)
+   (up-lerp-tiles scout-waypoint-x position-self-x g: scout-radius)
+   (set-goal input-angleRad 6283)
+   (up-modify-goal input-angleRad c:/ 5)
+   (up-modify-goal input-angleRad c:* 4)
+   (up-copy-point input-origin-x enemy-x)
+   (up-copy-point input-point-x scout-waypoint-x)
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point scout-waypoint-x input-point-x)
+   (up-bound-point scout-waypoint-x scout-waypoint-x)
+)
+
+(defrule
+   (goal scout-waypoint -2)
+=>
+   (up-bound-point scout-waypoint-x enemy-x)
+   (up-lerp-tiles scout-waypoint-x position-self-x g: scout-radius)
+   (set-goal input-angleRad 6283)
+   (up-modify-goal input-angleRad c:/ 5)
+   (up-modify-goal input-angleRad c:* 3)
+   (up-copy-point input-origin-x enemy-x)
+   (up-copy-point input-point-x scout-waypoint-x)
+   (xs-script-call "RotateByAngleNoConvert")
+   (up-bound-point scout-waypoint-x input-point-x)
+   (up-bound-point scout-waypoint-x scout-waypoint-x)
+)
+
+; (defrule
+;    (up-point-distance scout-waypoint-x enemy-x > scout-radius)
+; =>
+;    (up-lerp-tiles scout-waypoint-x enemy-x c: 1)
+;    (up-jump-rule -1)
+; )
+;Select waypoint
+
+(defrule
+   (up-point-distance scout-waypoint-x scout-group-x < 5)
+=>
+   (up-modify-goal scout-waypoint g:+ movement-direction)
+)
+
+(defrule
+   (up-compare-goal scout-waypoint >= 3)
+=>
+   (set-goal scout-waypoint -2)
+   (up-modify-goal scout-radius c:- 2)
+   (up-modify-goal scout-radius c:max 13)
+)
+
+(defrule
+   (up-compare-goal scout-waypoint <= -3)
+=>
+   (set-goal scout-waypoint 2)
+   (up-modify-goal scout-radius c:- 2)
+   (up-modify-goal scout-radius c:max 13)
+)
+
+(defrule
+   (timer-triggered fifteensec)
+   (up-compare-goal scout-radius > 45)
+=>
+   (up-modify-goal scout-radius c:- 4)
+)
+(defrule
+   (up-compare-goal scout-radius > 15)
+   (or(timer-triggered one-min)
+   (and(strategic-number sn-twenty-turns == 3)
+   (up-compare-goal scout-radius > 23)))
+=>
+   (up-modify-goal scout-radius c:- 1)
+   (up-modify-goal scout-radius c:max 13)
+   )
+
+(defrule
+   (up-compare-goal scout-waypoint <= -3)
+=>
+   ;(up-modify-goal scout-waypoint g:- movement-direction)
+   (up-modify-goal scout-waypoint c:+ 1)
+   (up-modify-goal scout-waypoint c:* -1)
+   ;(up-modify-goal scout-waypoint c:* -1)
+   ;(up-modify-goal movement-direction c:* -1)
+   ;(chat-to-player my-player-number "reached furthest point, reverse direction")
+)
+
+(defrule
+   (up-compare-goal scout-waypoint >= 3)
+=>
+   (up-modify-goal scout-waypoint c:- 1)
+   (up-modify-goal scout-waypoint c:* -1)
+   ;(up-modify-goal scout-waypoint c:* -1)
+   ;(up-modify-goal movement-direction c:* -1)
+   ;(chat-to-player my-player-number "reached furthest point, reverse direction")
+)
+; (defrule
+;    (timer-triggered two-mins)
+; =>
+;    (up-modify-goal scout-waypoint c:/ 2)
+;    (up-modify-goal movement-direction c:* -1)
+; )
+
+(defrule
+   (timer-triggered fifteensec)
+   (up-point-distance scout-group-x previous-scout-group-x < 5)
+=>
+   (up-modify-goal scout-waypoint g:+ movement-direction)
+)
+
+(defrule
+   (timer-triggered one-min)
+=>
+   (up-modify-goal scout-waypoint g:+ movement-direction)
+)
+(defrule
+   (timer-triggered fifteensec)
+=>
+   (up-bound-point previous-scout-group-x scout-group-x)
+)
+
+(defrule
+   (taunt-detected 1 207)
+=>
+   (fe-break-point 1 c:== 1 -1)
+   (disable-self)
+)
+
+(defrule
+   (research-completed ri-bloodlines)
+=>
+   (set-goal temporary-goal4 4)
+   (set-goal enemy-str 0)
+   (up-jump-rule 1)
+)
+
+
+(defrule
+   (true)
+=>
+   (set-goal temporary-goal4 3)
+   (set-goal enemy-str 0)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (strategic-number sn-focus-player-number > -1)
+   (players-stance focus-player enemy)
+=>
+   (up-full-reset-search)
+
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 9)
+   (up-find-remote c: archer-line c: 40)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total c:* 3)
+   (up-modify-goal enemy-str g:+ remote-total)
+   (up-reset-search 0 0 1 1)
+   (up-find-remote c: skirmisher-line c: 40)
+   (up-get-search-state local-total)
+   (up-modify-goal enemy-str g:+ remote-total)
+   (up-reset-search 0 0 1 1)
+   (up-find-remote c: scout-cavalry-line c: 40)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total c:* 5)
+   (up-modify-goal enemy-str g:+ remote-total)
+   (up-reset-search 0 0 1 1)
+   (up-find-remote c: militiaman-line c: 40)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total c:* 6)
+   (up-modify-goal enemy-str g:+ remote-total)
+   (up-reset-search 0 0 1 1)
+   (set-goal temporary-goal5 5555)
+
+)
+
+(defrule
+   (goal temporary-goal5 5555)
+   (strategic-number sn-focus-player-number > -1)
+   (players-stance focus-player enemy)
+=>
+   (up-find-remote c: spearman-line c: 40)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total c:* 17)
+   (up-modify-goal enemy-str g:+ remote-total)
+   (up-reset-search 0 0 1 1)
+   (up-find-remote c: villager-class c: 40)
+   (up-remove-objects search-remote object-data-action != actionid-attack)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total c:* 4);2
+   (up-modify-goal enemy-str g:+ remote-total)
+
+   ;(xs-script-call "RetrieveNextEnemy")
+   ;(up-chat-data-to-player my-player-number "Scout strength %d" g: temporary-goal2)
+   ;(up-chat-data-to-player my-player-number "Enemy army strength %d" g: temporary-goal)
+   ;(up-chat-data-to-player my-player-number "Distance to enemy %d" g: temporary-goal8)
+)
+
+(defrule
+   (strategic-number sn-focus-player-number < max-players)
+=>
+   (up-modify-sn sn-focus-player-number c:+ 1)
+   (up-jump-rule -3)
+)
+
+(defrule
+   (true)
+=>
+   (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)
+(defrule
+   (goal temporary-goal5 5555)
+=>
+   (up-get-group-size 0 12 scout-str)
+   (up-modify-goal scout-str g:* temporary-goal4)
+   (up-modify-goal scout-str c:/ 3)
+   (up-modify-goal scout-str c:* 5)
+   (up-get-point-distance scout-group-x enemy-x temporary-goal8)
+)
+
+
+
+(defrule
+   (goal temporary-goal5 5555)
+   (up-compare-goal enemy-str >= 1)
+=>
+   (up-modify-goal scout-sup g:= scout-str)
+   (up-modify-goal scout-sup g:- enemy-str)
+)
+(defrule
+   (goal temporary-goal5 5555)
+=>
+   (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+)
+
+(defrule
+   (up-compare-goal scout-sup <= -80)
+=>
+   (set-goal scout-action scout-retreat)
+   (up-modify-goal scout-radius c:+ 5)
+   (up-modify-goal scout-radius c:max 40)
+   (up-modify-goal scout-radius c:min 120)
+   (enable-timer 6 25)
+   (up-jump-rule 12)
+)
+
+(defrule
+   (not(up-timer-status 6 == timer-running))
+   (or(not(goal scout-action scout-civ-attack-no-block))
+   (timer-triggered fifteensec))
+=>
+   (set-goal scout-action scout-move)
+)
+
+;Decide action
+(defrule
+   (not(goal scout-action scout-retreat))
+   (taunt-detected 1 206)
+=>
+   (acknowledge-taunt 1 206)
+   (fe-break-point 1 c:== 1 -1)
+)
+
+
+;Default is move unless something else is detected
+
+(defrule
+   (or(up-projectile-detected projectile-town-center < 2000)
+   (up-point-distance scout-group-x enemy-x < 6))
+   (players-building-type-count target-player town-center > 0)
+=>
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 15)
+   (up-modify-goal scout-radius c:+ 5)
+   (up-modify-goal scout-radius c:min 35)
+   (up-jump-rule 19)
+)
+
+(defrule
+   (research-completed ri-bloodlines)
+=>
+   (set-goal temporary-goal4 4)
+   (up-jump-rule 1)
+)
+
+
+(defrule
+   (true)
+=>
+   (set-goal temporary-goal4 3)
+)
+; (defrule
+;    (goal modern-scout-micro yes)
+; =>
+;    (up-full-reset-search)
+;    (set-goal temporary-goal 0)
+;    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+;    (up-set-target-point scout-group-x)
+;    (up-filter-distance c: -1 c: 8)
+;    (up-find-remote c: archer-line c: 40)
+;    (up-get-search-state local-total)
+;    (up-modify-goal remote-total c:* 3)
+;    (up-modify-goal temporary-goal g:+ remote-total)
+;    (up-reset-search 0 0 1 1)
+;    (up-find-remote c: skirmisher-line c: 40)
+;    (up-get-search-state local-total)
+;    (up-modify-goal temporary-goal g:+ remote-total)
+;    (up-reset-search 0 0 1 1)
+;    (up-find-remote c: scout-cavalry-line c: 40)
+;    (up-get-search-state local-total)
+;    (up-modify-goal remote-total c:* 5)
+;    (up-modify-goal temporary-goal g:+ remote-total)
+;    (up-reset-search 0 0 1 1)
+;    (up-find-remote c: militiaman-line c: 40)
+;    (up-get-search-state local-total)
+;    (up-modify-goal remote-total c:* 6)
+;    (up-modify-goal temporary-goal g:+ remote-total)
+;    (up-reset-search 0 0 1 1)
+;    (set-goal temporary-goal5 5555)
+; )
+
+; (defrule
+;    (goal temporary-goal5 5555)
+; =>
+;    (up-find-remote c: spearman-line c: 40)
+;    (up-get-search-state local-total)
+;    (up-modify-goal remote-total c:* 17)
+;    (up-modify-goal temporary-goal g:+ remote-total)
+;    (up-reset-search 0 0 1 1)
+;    (up-find-remote c: villager-class c: 40)
+;    (up-remove-objects search-remote object-data-action != actionid-attack)
+;    (up-modify-goal remote-total c:* 2)
+;    (up-modify-goal temporary-goal g:+ remote-total)
+;    (up-get-group-size 0 12 temporary-goal2)
+;    (up-modify-goal temporary-goal2 g:* temporary-goal4)
+;    (up-modify-goal temporary-goal2 c:/ 3)
+;    (up-modify-goal temporary-goal2 c:* 5)
+;    (up-get-point-distance scout-group-x enemy-x temporary-goal8)
+;    ;(up-chat-data-to-player my-player-number "Scout strength %d" g: temporary-goal2)
+;    ;(up-chat-data-to-player my-player-number "Enemy army strength %d" g: temporary-goal)
+;    ;(up-chat-data-to-player my-player-number "Distance to enemy %d" g: temporary-goal8)
+; )
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+   (strategic-number sn-two-turns == 1)
+   (up-group-size c: 12 < 4)
+   (up-compare-goal enemy-str > 5)
+=>
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 8)
+   ;(chat-to-player my-player-number "Wait for 4th scout to engage")
+   (up-jump-rule 15)
+)
+(defrule
+   (up-compare-goal scout-sup <= -80)
+=>
+   (set-goal scout-action scout-retreat)
+   (up-modify-goal scout-radius c:+ 5)
+   (up-modify-goal scout-radius c:max 40)
+   (enable-timer 6 40)
+   (up-jump-rule 14)
+)
+
+(defrule
+   (up-compare-goal enemy-str >= 1)
+   (up-compare-goal scout-str g:>= enemy-str)
+   (nand(up-compare-goal scout-sup < 25)
+   (up-find-remote c: spearman-line c: 1))
+   (or(up-point-distance scout-group-x enemy-x > 13)
+   (and(up-point-distance scout-group-x enemy-x < 8)
+   (goal scout-action scout-mil-attack)));allow commitment to the TC to an extent
+   (or(up-compare-goal scout-sup > 10)
+   (and(up-point-distance scout-group-x enemy-x > 25)
+   (up-compare-goal scout-sup > 1)))
+=>
+   (set-goal scout-action scout-mil-attack);engage enemy
+   (up-jump-rule 13)
+)
+
+   
+
+(defrule
+   (goal modern-scout-micro yes)
+   (or(research-completed ri-forging)
+   (research-completed ri-bloodlines))
+=>
+   (set-goal temporary-goal4 2)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-timer-status 6 != timer-running)
+=>
+   (up-full-reset-search)
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 5)
+   (up-find-remote c: spearman-line c: 10)
+   (up-get-group-size c: 12 temporary-goal)
+   (up-get-search-state local-total)
+   (up-modify-goal remote-total g:* temporary-goal4)
+   (up-modify-goal temporary-goal2 g:= remote-total)
+   (set-goal temporary-goal5 6666)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-set-target-object search-remote c: 0)
+   (goal temporary-goal5 6666)
+=>
+   (up-get-point position-object point-x)
+  ; (up-chat-data-to-player my-player-number "Scout strength rating: %d" g: temporary-goal)
+   ;(up-chat-data-to-player my-player-number "Spear strengthr rating: %d" g: temporary-goal2)
+   (up-get-point-distance point-x enemy-x temporary-goal7)
+   ;(up-chat-data-to-player my-player-number "Spear distance from TC %d" g: temporary-goal)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-timer-status 6 != timer-running)
+   (up-set-target-object search-remote c: 0)
+   (up-compare-goal temporary-goal g:>= temporary-goal2)
+   (up-compare-goal temporary-goal7 > 3)
+   (goal temporary-goal5 6666)
+   (up-compare-goal scout-sup >= -25)
+   (up-point-distance scout-group-x enemy-x > 7)
+=>
+   (set-goal scout-action scout-spear-pull-away);anti spear
+   (up-jump-rule 9)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-group-size c: 12 < 3)
+   (up-timer-status 6 != timer-running)
+   (up-point-distance scout-group-x position-self-x > 20)
+   (or(up-point-distance scout-group-x position-self-x > 40)
+   (up-compare-goal enemy-str < 1))
+=>
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 11)
+   (up-jump-rule 7)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-timer-status 6 != timer-running)
+   (up-set-target-object search-remote c: 0)
+   (goal temporary-goal5 6666)
+   (up-point-distance scout-group-x enemy-x < 20)
+=>
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 10)
+   (up-modify-goal scout-waypoint c:+ 1)
+   (up-jump-rule 7)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-timer-status 6 != timer-running)
+   (up-set-target-object search-remote c: 0)
+   (goal temporary-goal5 6666)
+   (up-point-distance scout-group-x enemy-x >= 20)
+=>
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 30)
+   (up-modify-goal scout-waypoint c:+ 1)
+   (up-jump-rule 6)
+)
+
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-timer-status 6 != timer-running)
+   (goal scout-action scout-civ-attack-block)
+   (or(up-compare-sn sn-five-turns == 2)
+   (up-compare-sn sn-five-turns == 4))
+=>
+   (up-full-reset-search)
+   (up-get-group-size c: 12 temporary-goal)
+   (up-modify-goal temporary-goal c:* 5);weight scout = 5, active defending villager = 4, inactive villager = 1
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 6)
+   (up-find-remote c: villager-class c: 20)
+   (up-remove-objects search-remote object-data-order != orderid-attack)
+   (up-get-search-state local-total)
+   (up-modify-goal temporary-goal2 g:= remote-total)
+   (up-modify-goal temporary-goal2 c:* 4)
+   (up-reset-search 1 1 1 1)
+   (up-find-remote c: villager-class c: 20)
+   (up-remove-objects search-remote object-data-order == orderid-attack)
+   (up-get-search-state local-total)
+   (set-goal temporary-goal3 7777)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (goal scout-action scout-civ-attack-block)
+   (goal temporary-goal3 7777)
+   (up-compare-goal temporary-goal2 > 0)
+   (up-modify-goal temporary-goal2 c:+ remote-total)
+   (up-compare-goal temporary-goal g:> temporary-goal2)
+   (up-compare-goal scout-sup >= -50)
+=>
+   (set-goal scout-action scout-civ-attack-no-block);Engage villagers
+   (up-jump-rule 4)
+)
+;else
+(defrule
+   (goal temporary-goal3 7777)
+   (up-compare-goal temporary-goal2 > 0)
+=>
+   (set-goal scout-action scout-retreat)
+   (enable-timer 6 3)
+   (up-jump-rule 3)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+=>
+   (up-full-reset-search)
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 6)
+   (up-find-remote c: villager-class c: 10)
+   (up-set-target-point enemy-x)
+   (up-remove-objects search-remote object-data-distance < 6)
+   (up-get-search-state local-total)
+)
+
+(defrule
+   (goal modern-scout-micro yes)
+   (up-compare-goal remote-total > 0)
+   (not(up-timer-status 6 == timer-running))
+   (up-compare-goal scout-sup >= -75)
+   (not(goal scout-action scout-civ-attack-no-block))
+=>
+   (set-goal scout-action scout-civ-attack-block)
+   (up-jump-rule 1)
+)
+;Old scout action move rule
+
+(defrule
+   (true)
+=>
+   (do-nothing)
+)
+
+
+
+;Decide formation
+
+(defrule
+   (up-group-size c: 12 >= 3)
+   (up-group-size c: 12 <= 6)
+=>
+   (set-goal scout-formation formation-box)
+   (up-jump-rule 1)
+)
+
+(defrule
+   (true)
+=>
+   (set-goal scout-formation formation-line)
+)
+;Peform actions
+
+;Move
+
+(defrule
+   (goal scout-action scout-move)
+   (up-group-size c: 12 > 1)
+   (goal scout-formation formation-line)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-remove-objects search-local object-data-move-x == scout-waypoint-x)
+   (up-target-point scout-waypoint-x action-move formation-line stance-no-attack)
+)
+
+(defrule
+   (goal scout-action scout-move)
+   (up-group-size c: 12 > 1)
+   (goal scout-formation formation-box)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-remove-objects search-local object-data-move-x == scout-waypoint-x)
+   (up-target-point scout-waypoint-x action-move formation-box stance-no-attack)
+)
+
+;Villager kill
+
+
+
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-remove-objects search-local -1 == 0)
+   (up-set-target-object search-local c: 0)
+   (up-get-object-data object-data-id temporary-goal3)
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 10)
+   (up-find-remote c: villager-class c: 10)
+   (up-clean-search search-remote object-data-distance search-order-asc)
+   (up-remove-objects search-remote -1 > 0)
+   (up-set-target-object search-remote c: 0)
+   (up-get-object-data object-data-id temporary-goal)
+
+   ;(up-remove-objects search-local object-data-target g:== temporary-goal)
+   (up-target-objects 0 action-default -1 stance-stand-ground)
+   (up-get-search-state local-total)
+)
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+   (up-compare-sn sn-twenty-turns == 2)
+=>
+   (set-goal temporary-goal8 -1)
+)
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+   (up-compare-sn sn-five-turns == 14)
+=>
+   (set-goal temporary-goal8 1)
+)
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+   (up-compare-sn sn-five-turns != 2)
+   (up-compare-sn sn-five-turns != 14)
+=>
+   (set-goal temporary-goal8 0)
+)
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+   (up-compare-goal remote-total > 0)
+   (up-object-data object-data-order != orderid-attack)
+=>
+   (up-reset-search 1 1 0 0)
+   (up-reset-filters)
+   (up-get-object-data object-data-move-x point2-x)
+   (up-get-object-data object-data-move-y point2-y)
+   (up-get-point position-object point3-x)
+   ;(up-send-flare point3-x)
+   (up-add-object-by-id search-local g: temporary-goal3)
+   ;(up-get-object-data object-data-precise-x point3-x)
+   ;(up-get-object-data object-data-precise-y point3-y)
+   ;(up-bound-point point4-x point3-x)
+   ;(up-bound-point point4-x enemy-x)
+   ;(up-modify-goal point4-x c:* 100)
+   ;(up-modify-goal point4-x c:* 100)
+   (up-lerp-tiles point3-x enemy-x c: 1)
+   ;(up-cross-tiles point3-x enemy-x g: temporary-goal8)
+   ;(up-set-precise-target-point point3-x)
+   (up-target-point point3-x action-move -1 stance-no-attack)
+   ;(up-send-flare point3-x)
+)
+
+(defrule
+   (goal scout-action scout-civ-attack-block)
+   (up-compare-goal remote-total > 0)
+   (up-object-data object-data-order == orderid-attack)
+=>
+   (up-reset-search 1 1 0 0)
+   (up-add-object-by-id search-local g: temporary-goal3)
+   (up-target-objects 0 action-default -1 stance-stand-ground)
+)
+
+;Villager engage
+
+(defrule
+   (goal scout-action scout-civ-attack-no-block)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-remove-objects search-local object-data-attack-stance == stance-aggressive)
+   (up-bound-point point-x scout-group-x)
+   (up-lerp-tiles point-x position-self-x c: 3)
+   (up-target-point point-x 0 action-attack-move stance-aggressive)
+)
+
+;Spearman engage
+
+(defrule
+   (goal scout-action scout-spear-pull-away)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-filter-distance c: -1 c: 7)
+   (up-find-remote c: spearman-line c: 10)
+   (up-remove-objects search-local object-data-attacker-count > 0)
+   (up-target-objects 0 action-default -1 stance-defensive)
+)
+
+(defrule
+   (goal scout-action scout-spear-pull-away)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-filter-distance c: -1 c: 7)
+   (up-find-remote c: spearman-line c: 10)
+   (up-remove-objects search-local object-data-attacker-count < 1)
+   (up-bound-point point-x scout-group-x)
+   (up-lerp-tiles point-x enemy-x c: -5)
+   (up-target-point point-x action-move -1 stance-no-attack)
+)
+
+;Engage army
+
+(defrule
+   (goal scout-action scout-mil-attack)
+=>
+   (up-full-reset-search)
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 8)
+   (up-filter-include 4 -1 -1 -1)
+   (up-find-remote c: all-units-class c: 60)
+   (up-set-target-object search-remote c: 0)
+   (up-bound-point point-x scout-group-x)
+   (up-get-point position-object point2-x)
+   (up-lerp-tiles point-x point2-x c: 5)
+   (up-set-group search-local c: 12)
+   (up-remove-objects search-local object-data-attack-stance == stance-aggressive)
+   (up-target-point 0 action-attack-move -1 stance-aggressive)
+)
+
+
+(defrule
+   (goal scout-action scout-mil-attack)
+   (up-compare-sn sn-twenty-turns == 3)
+=>
+   (up-full-reset-search)
+   (up-set-target-point scout-group-x)
+   (up-filter-distance c: -1 c: 8)
+   (up-filter-include 4 -1 -1 -1)
+   (up-find-remote c: all-units-class c: 60)
+   (up-set-target-object search-remote c: 0)
+   (up-bound-point point-x scout-group-x)
+   (up-get-point position-object point2-x)
+   (up-lerp-tiles point-x point2-x c: 5)
+   (up-set-group search-local c: 12)
+   (up-remove-objects search-local object-data-target > 0)
+   (up-target-point 0 action-attack-move -1 stance-aggressive)
+)
+;Retreat from TC
+
+(defrule
+   (goal scout-action scout-retreat)
+   (up-point-distance scout-group-x enemy-x < 30);12
+   (up-point-distance scout-group-x enemy-x > 3)
+=>
+   (up-bound-point point-x scout-group-x)
+   (up-lerp-percent point-x enemy-x c: -50)
+   (up-bound-point point-x point-x)
+   (up-lerp-tiles point-x position-self-x c: 1)
+   (set-goal temporary-goal4 4433)
+)
+
+(defrule
+   (goal scout-action scout-retreat)
+   (or(not(goal temporary-goal4 4433))
+   (or(and(up-point-contains point-x c: tree-class) 
+   (up-point-distance scout-group-x point-x < 7))
+   (up-point-distance scout-group-x point-x < 2)))
+   ;(up-point-distance scout-group-x enemy-x >= 11)
+=>
+   (up-bound-point point-x scout-group-x)
+   (up-lerp-tiles point-x position-self-x c: 10)
+
+   ;(chat-to-player my-player-number "rule 2")
+   ;(up-send-flare point-x)
+)
+
+(defrule
+   (goal scout-action scout-retreat)
+=>
+   (up-full-reset-search)
+   (up-set-group search-local c: 12)
+   (up-target-point point-x action-move -1 stance-no-attack)
+)
+
+
+
+
+
+; (defrule
+;    (true)
+; =>
+;    (up-chat-data-to-player 1 "Scout action %d" g: scout-action)
+;    (up-chat-data-to-player 1 "Scout superiority %d" g: scout-sup)
+; )
+
+(defrule
+   (strategic-number sn-twenty-turns == 3)
+   (goal scout-action scout-retreat)
+=>
+   (generate-random-number 100)
+)
+
+(defrule
+   (goal scout-action scout-retreat)
+   (strategic-number sn-twenty-turns == 3)
+   (random-number < 5)
+=>
+   (up-modify-goal scout-waypoint c:+ 1)
+)
+
+(defrule
+   (goal scout-action scout-retreat)
+   (strategic-number sn-twenty-turns == 3)
+   (random-number > 95)
+=>
+   (up-modify-goal scout-waypoint c:- 1)
+)
+
+(defrule
+   (true)
+=>
+   (up-get-rule-id scout-jump-id)
+)
+
+
+

@@ -1,0 +1,62 @@
+(defrule
+    (true)
+=>
+    (up-change-name "pure_promi")
+)
+
+(load "strat_pure_promi\Promisory\defaultConstants")
+(load "strat_pure_promi\Promisory\finalingConstants")
+(load "strat_pure_promi\Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "strat_pure_promi\Promisory\init")
+(load "strat_pure_promi\Promisory\threats")
+(load "strat_pure_promi\Promisory\escrow")
+(load "strat_pure_promi\Promisory\dawn")
+(load "strat_pure_promi\Promisory\gatherers")
+(load "strat_pure_promi\Promisory\scoutcontrol")
+(load "strat_pure_promi\Promisory\tsa")
+(load "strat_pure_promi\Promisory\watercontrol")
+(load "strat_pure_promi\Promisory\general")
+(load "strat_pure_promi\Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "strat_pure_promi\Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "strat_pure_promi\Promisory\researches")
+(load "strat_pure_promi\Promisory\interaction")
+(load "strat_pure_promi\Promisory\buildings")
+(load "strat_pure_promi\Promisory\units")
+(load "strat_pure_promi\Promisory\trade")
+(load "strat_pure_promi\Promisory\resign")
+#else
+(load "strat_pure_promi\Promisory\finaling")
+#end-if
+(load "strat_pure_promi\Promisory\event")
+
+; pure_promi: full Promisory + explicit scenario target fix ONLY.
+; No unit controller. A/B test vs deep_hunter to isolate the value of the dive.
+(defrule
+    (player-number scenario-player-1)
+=>
+    (set-strategic-number sn-target-player-number 2)
+    (set-strategic-number sn-focus-player-number 2)
+)
+(defrule
+    (player-number scenario-player-2)
+=>
+    (set-strategic-number sn-target-player-number 1)
+    (set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+    (true)
+=>
+    (chat-to-player my-player-number "PURE-PROMI: TARGET FIX ACTIVE")
+    (disable-self)
+)
+
+(include "ailib/Geometry.xs")

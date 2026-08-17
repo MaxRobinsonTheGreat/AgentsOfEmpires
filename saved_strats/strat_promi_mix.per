@@ -1,0 +1,61 @@
+; strat_promi_mix.per - Promisory + combined arms ("promi-mix")
+; knights beat trash, pikes beat knights, mangonels beat clumps.
+
+(defrule (true) => (up-change-name "promi-mix") (disable-self))
+
+(defrule (current-age == castle-age) (building-type-count stable < 2) (can-build stable) => (build stable))
+(defrule (current-age == castle-age) (building-type-count barracks < 2) (can-build barracks) => (build barracks))
+(defrule (current-age == castle-age) (building-type-count siege-workshop == 0) (can-build siege-workshop) => (build siege-workshop))
+
+(defrule (current-age >= castle-age) (unit-type-count-total knight-line < 10) (can-train knight-line) => (train knight-line))
+(defrule (current-age >= castle-age) (unit-type-count-total spearman-line < 12) (can-train spearman-line) => (train spearman-line))
+(defrule (current-age >= castle-age) (unit-type-count-total mangonel-line < 3) (can-train mangonel-line) => (train mangonel-line))
+
+(defrule (can-research ri-bloodlines) => (research ri-bloodlines))
+(defrule (can-research ri-husbandry) => (research ri-husbandry))
+(defrule (can-research ri-scale-barding) => (research ri-scale-barding))
+(defrule (can-research ri-chain-barding) => (research ri-chain-barding))
+(defrule (can-research ri-plate-barding) => (research ri-plate-barding))
+(defrule (can-research ri-cavalier) => (research ri-cavalier))
+(defrule (can-research ri-pikeman) => (research ri-pikeman))
+(defrule (can-research ri-halberdier) => (research ri-halberdier))
+(defrule (can-research ri-scale-mail) => (research ri-scale-mail))
+(defrule (can-research ri-chain-mail) => (research ri-chain-mail))
+(defrule (can-research ri-squires) => (research ri-squires))
+(defrule (can-research ri-onager) => (research ri-onager))
+
+(load "Promisory\defaultConstants")
+(load "Promisory\finalingConstants")
+(load "Promisory\customConstants")
+#load-if-not-defined BATTLE-ROYALE
+(load "Promisory\init")
+(load "Promisory\threats")
+(load "Promisory\escrow")
+(load "Promisory\dawn")
+(load "Promisory\gatherers")
+(load "Promisory\scoutcontrol")
+(load "Promisory\tsa")
+(load "Promisory\watercontrol")
+(load "Promisory\general")
+(load "Promisory\orb")
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined INFINITE-RESOURCES-START
+(load "Promisory\boarhunting")
+#end-if
+#end-if
+#end-if
+#end-if
+(load "Promisory\researches")
+(load "Promisory\interaction")
+(load "Promisory\buildings")
+(load "Promisory\units")
+(load "Promisory\trade")
+(load "Promisory\resign")
+#else
+(load "Promisory\finaling")
+#end-if
+(load "Promisory\event")
+
+(include "ailib/Geometry.xs")

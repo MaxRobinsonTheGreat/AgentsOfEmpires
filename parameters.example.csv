@@ -1,0 +1,2 @@
+AI_One,Civ_One,AI_Two,Civ_Two,Games,Time Limit (real seconds),"Speed increase Hotkey (defaults to 8x, leave blank for no increase)"
+first-ai.per,huns,second-ai.per,huns,1,240,

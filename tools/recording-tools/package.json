@@ -1,0 +1,8 @@
+{
+  "name": "aoe2-local-recording-reader",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "agelens": "0.1.1"
+  }
+}

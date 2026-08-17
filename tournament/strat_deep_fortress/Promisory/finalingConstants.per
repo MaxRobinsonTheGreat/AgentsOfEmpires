@@ -1,0 +1,400 @@
+(defconst building-count 27)				;any
+(defconst building-type-count 28)
+
+#load-if-defined DIFFICULTY-EASIEST
+(defconst consecutive-jumps 64)
+(defconst consecutive-idle-unit-limit 10)
+(defconst enemy-sighted-response-percentage 50)
+(defconst enemy-sighted-response-distance 10)
+(defconst escrowing-percentage 75)
+(defconst initial-delay 50)
+#end-if
+#load-if-defined DIFFICULTY-EASY
+(defconst consecutive-jumps 32)
+(defconst consecutive-idle-unit-limit 8)
+(defconst enemy-sighted-response-percentage 60)
+(defconst enemy-sighted-response-distance 12)
+(defconst escrowing-percentage 60)
+(defconst initial-delay 30)
+#end-if
+#load-if-defined DIFFICULTY-MODERATE
+(defconst consecutive-jumps 16)
+(defconst consecutive-idle-unit-limit 6)
+(defconst enemy-sighted-response-percentage 70)
+(defconst enemy-sighted-response-distance 14)
+(defconst escrowing-percentage 45)
+(defconst initial-delay 20)
+#end-if
+#load-if-defined DIFFICULTY-HARD
+(defconst consecutive-jumps 8)
+(defconst consecutive-idle-unit-limit 4)
+(defconst enemy-sighted-response-percentage 80)
+(defconst enemy-sighted-response-distance 16)
+(defconst escrowing-percentage 30)
+(defconst initial-delay 10)
+#end-if
+#load-if-defined DIFFICULTY-HARDEST
+(defconst consecutive-jumps 4)
+(defconst consecutive-idle-unit-limit 2)
+(defconst enemy-sighted-response-percentage 90)
+(defconst enemy-sighted-response-distance 18)
+(defconst escrowing-percentage 12)
+(defconst initial-delay 5)
+#end-if
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+#load-if-not-defined DIFFICULTY-HARD
+#load-if-not-defined DIFFICULTY-HARDEST
+(defconst consecutive-jumps 2)
+(defconst consecutive-idle-unit-limit 0)
+(defconst enemy-sighted-response-percentage 100)
+(defconst enemy-sighted-response-distance 20)
+(defconst escrowing-percentage 0)
+(defconst initial-delay 2)
+#end-if
+#end-if
+#end-if
+#end-if
+#end-if
+(defconst gl-population-cap 98)
+(defconst temp-goal 99)
+(defconst found-gaia 100)
+(defconst gl-center-x 101)
+(defconst gl-center-y 102)
+(defconst first-time 103)
+(defconst gl-object-x 104)
+(defconst gl-object-y 105)
+(defconst gl-local-total 106)
+(defconst gl-local-last 107)
+(defconst gl-remote-total 108)
+(defconst gl-remote-last 109)
+(defconst temp-goal2 110)
+(defconst temp-goal3 111)
+(defconst gl-object2-x 112)
+(defconst gl-object2-y 113)
+
+(defconst br-temp-point-x 114)
+(defconst br-temp-point-y 115)
+
+(defconst object-data-ownership 83)
+(defconst object-data-capture-flag 84) ; 0 = capture never, 1 = capture once, 2 = capture multiple times, 3 = capture livestock/artifact
+(defconst evil-gaia-unit 1)
+(defconst gl-did-capture 44)
+(defconst gl-did-attack 45)
+(defconst aztec-raider 1570)
+(defconst impassable-tile 1613)
+(defconst workshop 1647)
+(defconst flaming-camel 1263)
+(defconst gl-group-size 66)
+(defconst TERRAIN_DLC2_FORGOTTEN_BLACK 47)
+(defconst TERRAIN_KILLER_FOG 69)
+
+#load-if-defined BYZANTINE-CIV
+(defconst siege-ship dromon)
+#else
+#load-if-defined GOTHIC-CIV
+(defconst siege-ship dromon)
+#else
+#load-if-defined HUN-CIV
+(defconst siege-ship dromon)
+#else
+#load-if-defined ROMAN-CIV
+(defconst siege-ship dromon)
+#else
+(defconst siege-ship cannon-galleon-line)
+#end-if
+#end-if
+#end-if
+#end-if
+
+
+;--------------------------------------
+; Chronicles Constants
+;--------------------------------------
+(defconst immortal-line -222)
+(defconst immortal 2101)
+(defconst elite-immortal 2102)
+
+(defconst hippeus-line -220)
+(defconst hippeus 2107)
+(defconst elite-hippeus 2108)
+
+(defconst strategos-line -221)
+(defconst strategos 2104)
+(defconst elite-strategos 2105)
+
+(defconst spartan-king 2162)
+
+(defconst companion-line -203)
+(defconst companion 2382)
+(defconst elite-companion 2383)
+
+(defconst rhomphaia-line -201)
+(defconst rhomphaia 2386)
+(defconst elite-rhomphaia 2387)
+
+(defconst pattiyodha-line -200)
+(defconst pattiyodha 2388)
+(defconst elite-pattiyodha 2389)
+
+(defconst ri-elite-immortal 1115)
+(defconst ri-elite-hippeus 1135)
+(defconst ri-elite-strategos 1125)
+(defconst ri-elite-companion 1289)
+(defconst ri-elite-rhomphaia 1301)
+(defconst ri-elite-pattiyodha 1326)
+
+(defconst war-chariot-line -218)
+(defconst war-chariot 2150)
+(defconst elite-war-chariot 2151)
+(defconst ri-elite-war-chariot 1171)
+
+(defconst hoplite-line -219)
+(defconst hoplite 2110 )
+(defconst elite-hoplite 2111)
+(defconst ri-elite-hoplite 1137)
+
+(defconst phalangite-line -202 )
+(defconst phalangite 2384 )
+(defconst elite-phalangite 2385)
+(defconst ri-elite-phalangite 1291)
+
+(defconst sannahya-line -199)
+(defconst sannahya 2390)
+(defconst elite-sannahya 2391)
+(defconst ri-elite-sannahya 1328)
+
+(defconst scout-ship 1123)
+(defconst raiding-ship 1124)
+(defconst heavy-raiding-ship 1125)
+(defconst elite-raiding-ship 1126)
+(defconst scout-ship-line -217)
+
+(defconst arrow-ship 2130 )
+(defconst heavy-arrow-ship 2131)
+(defconst elite-arrow-ship 2132)
+(defconst arrow-ship-line -215)
+
+(defconst ramming-ship 2127 )
+(defconst heavy-ramming-ship 2128)
+(defconst elite-ramming-ship 2129)
+(defconst ramming-ship-line -216)
+
+(defconst incendiary-raft 2133 )
+(defconst incendiary-ship 2134)
+(defconst heavy-incendiary-ship 2135)
+(defconst incendiary-ship-line -214)
+
+(defconst mangonel-ship 2138 )
+(defconst heavy-mangonel-ship 2139)
+(defconst mangonel-ship-line -213)
+
+(defconst octeres 2140)
+
+
+;buildings
+(defconst port 45)
+(defconst port 2141)
+(defconst port 2142)
+(defconst port 2143)
+(defconst port 2172)
+(defconst shipyard 2119)
+
+
+;UTs
+;Achaemenids UT's
+(defconst ri-sparabaras 1110)
+(defconst ri-laminated-bow 1111)
+(defconst ri-scythed-chariots 1112)
+(defconst ri-karda 1113)
+
+;Athenian UT's
+(defconst ri-taxiarchs 1121)
+(defconst ri-iphicratean-tactics 1120)
+(defconst ri-eisphora 1122)
+(defconst ri-delian-league 1123)
+
+;Spartan UT's
+(defconst ri-helot-levies 1130)
+(defconst ri-xyphos 1131)
+(defconst ri-kryptia 1132)
+(defconst ri-peloponnesian-league 1133)
+
+(defconst ri-ephorate 1223)
+(defconst ri-morai 1224)
+(defconst ri-skeuphoroi 1225)
+(defconst ri-hippagretai 1226)
+
+;Macedonian UT's
+(defconst ri-veteran-chiliarchs 1284)
+(defconst ri-ends-of-the-world 1285)
+(defconst ri-pezhetairoi 1286)
+(defconst ri-sarissophoroi 1287)
+
+(defconst ri-fortified-outpost 1270)
+
+;Puru UT's
+(defconst ri-vadhavadha 1307)
+(defconst ri-leaf-headed-shafts 1308)
+(defconst ri-vedic-teachings 1309)
+(defconst ri-skandhavaras 1310)
+
+;Thracian UT's
+(defconst ri-odomantian-raiders 1296)
+(defconst ri-dii-plunderers 1297)
+(defconst ri-bessian-metalworking 1298)
+(defconst ri-peltasts 1299)
+
+;Naval
+
+(defconst galley-line -292)
+(defconst fire-ship-line -293)
+(defconst fire-galley-line -293)
+(defconst demoltion-raft-line -294)
+(defconst demolition-ship-line -294)
+
+(defconst ri-raiding-ship 1144)
+(defconst ri-heavy-raiding-ship 1145)
+(defconst ri-elite-raiding-ship 1146)
+
+(defconst ri-heavy-ramming-ship 1148)
+(defconst ri-elite-ramming-ship 1149)
+
+(defconst ri-heavy-arrow-ship 1151)
+(defconst ri-elite-arrow-ship 1152)
+
+(defconst ri-incendiary-ship 1154)
+(defconst ri-heavy-incendiary-ship 1155)
+
+(defconst ri-heavy-mangonel-ship 1159)
+
+(defconst ri-hypozomata 1165)
+(defconst ri-drums 1167)
+(defconst ri-scoop-nets 1161)
+
+(defconst ri-merchant-ratio-gold 1215)
+(defconst ri-merchant-ratio-balanced 1216)
+(defconst ri-merchant-ratio-wood 1217)
+
+(defconst ri-oligarchy 1202)
+(defconst ri-democracy 1203)
+(defconst ri-tyranny 1204)
+
+(defconst merchant-ship 2149)
+
+(defconst transport-ship 545)
+(defconst cannon-galleon-line -284)
+
+;These must be exclusive to Paphos - loading them with a Phoenix civ will cause errors
+#load-if-defined ATHENIANS-CIV
+
+(defconst galley-line -215);2130
+(defconst demolition-ship-line 2133)
+(defconst fire-ship-line 2127)
+(defconst cannon-galleon-line 2140)
+(defconst fishing-ship 13)
+(defconst transport-ship 2148)
+
+#end-if
+
+#load-if-defined SPARTANS-CIV
+
+
+(defconst galley-line -215);2130
+(defconst demolition-ship-line 2133)
+(defconst fire-ship-line 2127)
+(defconst cannon-galleon-line 2140)
+(defconst fishing-ship 13)
+(defconst transport-ship 2148)
+
+#end-if
+
+#load-if-defined ACHAEMENIDS-CIV
+
+(defconst galley-line -215);2130
+(defconst demolition-ship-line 2133)
+(defconst fire-ship-line 2127)
+(defconst cannon-galleon-line 2140)
+(defconst fishing-ship 13)
+(defconst transport-ship 2148)
+
+#end-if
+
+#load-if-defined MACEDONIANS-CIV
+
+(defconst galley-line -215);2130
+(defconst demolition-ship-line 2133)
+(defconst fire-ship-line 2127)
+(defconst cannon-galleon-line 2140)
+(defconst fishing-ship 13)
+(defconst transport-ship 2148)
+
+#end-if
+
+#load-if-defined PURU-CIV
+
+(defconst galley-line -215);2130
+(defconst demolition-ship-line 2133)
+(defconst fire-ship-line 2127)
+(defconst cannon-galleon-line 2140)
+(defconst fishing-ship 13)
+(defconst transport-ship 2148)
+
+#end-if
+
+#load-if-defined THRACIANS-CIV
+
+(defconst galley-line -215);2130
+(defconst demolition-ship-line 2133)
+(defconst fire-ship-line 2127)
+(defconst cannon-galleon-line 2140)
+(defconst fishing-ship 13)
+(defconst transport-ship 2148)
+
+#end-if
+
+(defconst ri-doctrine-mercenaries-1 1277)
+(defconst ri-doctrine-mercenaries-2 1280)
+(defconst ri-doctrine-mercenaries-3 1283)
+
+(defconst ri-doctrine-regular-1 1276)
+(defconst ri-doctrine-regular-2 1279)
+(defconst ri-doctrine-regular-3 1282)
+
+(defconst ri-doctrine-balanced-1 1275)
+(defconst ri-doctrine-balanced-2 1278)
+(defconst ri-doctrine-balanced-3 1281)
+
+;============================== PAPHOS Goals =============================
+
+(defconst trainchariot 8000)
+(defconst trainhoplite 8001)
+
+(defconst trainlembos 8002)
+(defconst trainmonoreme 8003)
+(defconst trainarrowship 8004)
+(defconst trainincendiary 8005)
+(defconst traincatapultship 8006)
+(defconst trainocteres 8007)
+(defconst trainocteres 8008)
+(defconst trainphalangite 8009)
+(defconst trainsannahya 8010)
+
+(defconst paphosciv 8201)
+(defconst gl-paphos-uu-count 8202)
+
+(defconst war-chariot-set 8401)
+(defconst hoplite-set 8402)
+(defconst phalangite-set 8403)
+(defconst sannahya-set 8404)
+
+
+(defconst achaemenids 46)
+(defconst athenians 47)
+(defconst spartans 48)
+(defconst macedonians 54)
+(defconst thracians 55)
+(defconst puru 56)
+;================================= PAPHOS =================================
+(defconst hut 1082);1082

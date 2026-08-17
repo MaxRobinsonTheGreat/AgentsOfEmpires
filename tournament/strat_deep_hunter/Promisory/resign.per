@@ -1,0 +1,890 @@
+
+(defrule
+	(up-compare-const enable-resign == 0)
+=>
+	(set-goal resign no)
+)
+
+
+(defrule
+	(up-compare-const faster-resign == 1)
+	(up-compare-goal fastresign < 1)
+=>
+	(set-goal fastresign 1)
+)
+
+(defrule
+(or	(strategic-number sn-focus-player-number > max-players)
+(or	(strategic-number sn-focus-player-number <= 0)
+(or	(not	(player-in-game focus-player))
+	(stance-toward focus-player ally))))
+	(strategic-number sn-target-player-number != 0); none
+=>
+	(set-goal retargetenemy yes)
+	(up-find-player enemy find-closest temporary-goal)
+	(up-modify-sn sn-target-player-number g:= temporary-goal)
+	(up-modify-sn sn-focus-player-number g:= temporary-goal)
+;	(chat-to-player my-player-number "Debugging focus/target-player. 6")
+)
+
+(defrule
+	(true)
+=>
+	(set-goal temporary-goal8 600)
+	(set-goal temporary-goal9 800)
+	(set-goal temporary-goal10 1000)
+	(up-modify-goal temporary-goal g:= gl-random-number)
+	(up-modify-goal temporary-goal c:min 100)
+	(up-modify-goal temporary-goal c:/ 2)
+	(up-modify-goal temporary-goal c:max 0)
+	(up-modify-goal temporary-goal8 g:+ temporary-goal)
+	(up-modify-goal temporary-goal9 g:+ temporary-goal)
+	(up-modify-goal temporary-goal10 g:+ temporary-goal))
+
+#load-if-not-defined UP-SCENARIO-GAME
+(defrule
+	(taunt-detected any-human 104)
+=>
+	(chat-to-allies-using-id 22153); "39 At once, sire!"
+	(disable-self))
+
+
+(defrule
+	(up-compare-const de-game == 1)
+(or	(up-compare-const sd-game == 1)
+(or	(up-compare-const wr-game == 1)
+(or	(up-compare-const dtw-game == 1)
+(or	(up-compare-const reg-game == 1)
+(or	(up-compare-const koth-game == 1)
+(or	(up-compare-const br-game == 1)
+	(up-compare-const ctr-game == 1)))))))
+=>
+	(chat-to-player my-player-number "104")
+	(disable-self))
+(defrule
+(or	(goal resign 2)
+(or	(up-compare-goal gl-treaty-time >= 1)
+(or	(taunt-detected any-human 104)
+	(taunt-detected my-player-number 104))))
+=>
+	(up-jump-rule 23))
+(defrule
+	(up-compare-const de-game == 1)
+=>
+	(set-goal temporary-goal civilian-percent)
+	(set-goal temporary-goal3 military-percent)
+	(up-modify-goal temporary-goal3 c:/ 2)
+	(up-modify-goal temporary-goal g:+ temporary-goal3)
+	(up-modify-goal temporary-goal c:max 2)
+	(up-modify-goal temporary-goal c:min 100)
+	(set-goal temporary-goal2 max-pop)
+	(up-modify-goal temporary-goal2 c:min 200)
+	(up-modify-goal temporary-goal2 g:* temporary-goal)
+	(up-modify-goal temporary-goal2 c:/ 100)
+	(up-modify-goal temporary-goal2 c:/ 3)
+	(up-modify-goal temporary-goal2 c:max 2))
+(defrule
+	(up-compare-const de-game == 1)
+(or	(and	(up-compare-goal gl-game-time g:< temporary-goal10)
+		(goal attacking yes))
+(or	(population g:>= temporary-goal2)
+	(player-in-game any-human-ally)))
+=>
+	(up-jump-rule 21))
+(defrule
+(or	(and	(up-compare-const ffa-game == yes)
+		(and	(unit-type-count-total villager >= 1)
+			(game-time < 3500)))
+(or	(up-timer-status resign-timer != timer-disabled)
+(or	(and	(up-compare-const dm-game != 1)
+		(up-compare-goal gl-game-time g:< temporary-goal9))
+	(up-compare-goal gl-game-time g:< temporary-goal8))))
+=>
+	(up-jump-rule 20))
+(defrule
+	(victory-condition standard)
+;(or	(players-building-type-count any-ally 826 >= 1)
+;(or	(building-type-count 826 >= 1)
+(or	(hold-relics)
+(or	(building-type-count wonder >= 1)
+	(players-building-type-count any-ally wonder >= 1))););)
+=>
+	(up-jump-rule 19))
+(defrule
+	(strategic-number sn-military-superiority <= -3)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(nand	(player-in-game any-ally)
+			(players-population any-ally >= 75)))
+	(not	(player-in-game any-ally)))
+	(unit-type-count-total villager < 1)
+	(unit-type-count-total monk < 1)
+	(building-type-count town-center < 1)
+	(building-type-count monastery < 1)
+=>
+	(set-goal resign yes))
+(defrule
+	(population <= 1); scout
+	(housing-headroom <= 0)
+	(unit-type-count-total villager < 1)
+	(unit-type-count-total monk < 1)
+(or	(building-type-count market < 1)
+	(unit-type-count-total trade-cart < 1))
+(or	(building-type-count dock < 1)
+	(and	(building-type-count shipyard < 1)
+		(building-type-count port < 1)))
+(or	(unit-type-count-total trade-cog < 1)
+	(unit-type-count-total merchant-ship < 1))
+	(building-type-count town-center < 1)
+	(building-type-count monastery < 1)
+=>
+	(set-goal resign yes))
+(defrule
+	(up-compare-const de-game == 1)
+(or	(player-in-game any-human-enemy)
+	(up-compare-goal gl-game-time g:< temporary-goal10))
+(or	(population >= ten-pop)
+(or	(up-compare-const civilian-percent < 33)
+(or	(up-compare-goal custom-civ-pop >= up-max-civ)
+	(population g:>= allowed-num-military))))
+=>
+	(up-get-fact resource-amount amount-killed-by-others temporary-goal)
+	(up-get-fact resource-amount amount-razed-by-others temporary-goal2)
+	(up-modify-goal temporary-goal g:+ temporary-goal2)
+	(set-goal temporary-goal3 2358023))
+(defrule
+	(goal temporary-goal3 2358023)
+	(up-compare-goal temporary-goal < max-pop)
+	(up-compare-goal temporary-goal < 80)
+(or	(population >= thirty-pop)
+	(up-compare-goal temporary-goal < 40))
+(or	(population >= twenty-pop)
+	(up-compare-goal temporary-goal < 20))
+	(population >= 3)
+=>
+	(up-jump-rule 15))
+(defrule
+	(goal temporary-goal3 2358023)
+;	(game-time < contact-delay)
+(not	(player-resigned any-ally))
+	(up-compare-goal temporary-goal < max-pop)
+	(up-compare-goal temporary-goal < thirty-pop)
+(or	(population >= thirty-pop)
+	(up-compare-goal temporary-goal < twenty-pop))
+(or	(population >= twenty-pop)
+	(up-compare-goal temporary-goal < ten-pop))
+	(population >= 3)
+=>
+	(up-jump-rule 14))
+(defrule
+(or	(strategic-number sn-military-superiority >= -2)
+(or	(strategic-number teamsuperiority >= -2)
+(or	(goal underattack no)
+	(population >= eighty-pop))))
+(or	(population >= ten-pop)
+	(population >= 32))
+=>
+	(up-jump-rule 13))
+(defrule
+	(up-compare-const diff-id <= 0)
+	(player-in-game any-human-enemy)
+	(player-in-game every-ally)
+	(up-allied-goal every-ally resign != yes)
+	(game-time < 4800)
+=>
+	(set-goal point-x 100)
+	(up-modify-goal point-x c:min fifty-pop)
+	(up-get-fact game-time 0 point-y)
+	(up-modify-goal point-y c:/ 30)
+	(up-modify-goal point-x g:min point-y)
+	(up-modify-goal point-x c:max ten-pop))
+(defrule
+	(up-compare-const diff-id <= 0)
+	(player-in-game any-human-enemy)
+	(player-in-game every-ally)
+	(up-allied-goal every-ally resign != yes)
+	(game-time < 4800)
+(or	(players-population every-enemy g:< point-x)
+(or	(players-population any-ally g:>= point-x)
+	(population g:>= point-x)))
+=>
+	(up-jump-rule 11))
+(defrule
+	(up-compare-const diff-id <= 0)
+	(player-in-game any-ally)
+(or	(players-population any-ally >= fifty-pop)
+	(game-time < 2100))
+(or	(players-population any-ally >= sixty-pop)
+(or	(players-population any-ally g:>= target-pop)
+(or	(strategic-number sn-military-superiority >= -2)
+(or	(strategic-number teamsuperiority >= -2)
+	(population >= ten-pop)))))
+=>
+	(up-jump-rule 10))
+(defrule
+;	(up-compare-const de-game == 1)
+	(up-compare-const human-ally-start == 1)
+(not	(player-in-game any-human-ally))
+	(player-in-game any-human-enemy)
+	(population < eighty-pop)
+(or	(population < sixty-pop)
+	(strategic-number teambalance < 0))
+	(goal attacking no)
+	(population < 5);this rule causes a lot of problems in FFA games with treaty - best to disable for now
+=>
+	(set-goal resign yes))
+(defrule
+	(player-in-game any-human-enemy)
+(not	(player-in-game any-ally))
+	(population < 30)
+(or	(population < 24)
+	(players-population any-enemy >= 60))
+(or	(population < 18)
+	(players-population any-enemy >= 48))
+(or	(population < 12)
+	(players-population any-enemy >= 36))
+	(players-population any-enemy >= 24)
+=>
+	(set-goal resign yes))
+(defrule
+	(player-in-game any-human-enemy)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(nand	(player-in-game any-ally)
+			(players-population any-ally >= ten-pop)))
+	(not	(player-in-game any-ally)))
+	(population < ten-pop)
+	(players-population any-enemy >= thirty-pop)
+	(goal underattack yes)
+	(strategic-number sn-military-superiority <= -3)
+=>
+	(set-goal resign yes))
+(defrule
+(or	(player-in-game any-human-enemy)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(nand	(player-in-game any-ally)
+			(players-population any-ally >= 30)))
+	(not	(player-in-game any-ally))))
+	(population < 30)
+	(players-population any-enemy >= 75)
+;(not	(player-in-game every-ally))
+=>
+	(set-goal resign yes))
+(defrule
+(or	(player-in-game any-human-enemy)
+	(not	(player-in-game any-human-ally)))
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(nand	(player-in-game any-ally)
+			(players-population any-ally >= thirty-pop)))
+	(not	(player-in-game any-ally)))
+	(population < thirty-pop)
+	(players-population any-enemy >= sixty-pop)
+	(strategic-number sn-military-superiority <= -3)
+;(not	(player-in-game every-ally))
+=>
+	(set-goal resign yes))
+(defrule
+	(player-in-game any-human-enemy)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(nand	(player-in-game any-ally)
+			(players-population any-ally >= 80)))
+	(not	(player-in-game any-ally)))
+	(population < 80)
+	(players-population any-enemy >= 144)
+	(strategic-number sn-military-superiority <= -3)
+;(not	(player-in-game every-ally))
+=>
+	(set-goal resign yes))
+(defrule
+;(not	(player-in-game any-human-ally))
+	(up-compare-const de-game != 1)
+	(population < 110)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(players-population every-ally < 110))
+	(not	(player-in-game any-ally)))
+(or	(player-resigned any-ally)
+(or	(players-population every-enemy >= 168)
+	(up-compare-goal teamsuperiority-number < -200)))
+	(players-population any-enemy >= 168)
+	(player-in-game every-enemy)
+=>
+	(set-goal resign yes))
+(defrule
+(or	(not	(player-in-game any-human-enemy))
+(or	(military-population >= ten-pop)
+(or	(population >= sixty-pop)
+(or	(strategic-number sn-military-superiority >= -2)
+(or	(players-population every-enemy < sixty-pop)
+	(and	(players-population every-enemy < eighty-pop)
+		(not	(player-in-game every-enemy))))))))
+=>
+	(up-jump-rule 2))
+(defrule
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(and	(players-population every-ally < sixty-pop)
+			(players-military-population every-ally < ten-pop)))
+	(not	(player-in-game any-ally)))
+(or	(players-military-population every-enemy >= thirty-pop)
+	(up-compare-goal teamsuperiority-number g:< resign-mpop))
+	(players-population any-enemy >= eighty-pop)
+=>
+	(set-goal resign yes))
+(defrule
+	(population < thirty-pop)
+(or	(and	(strategic-number teamsuperiority <= -3); test
+		(and	(players-population every-ally < thirty-pop)
+			(players-military-population every-ally < ten-pop)))
+	(not	(player-in-game any-ally)))
+(or	(players-military-population every-enemy >= thirty-pop)
+	(up-compare-goal teamsuperiority-number g:< resign-mpop))
+=>
+	(set-goal resign yes)); end jumps
+
+#load-if-not-defined DE-AVAILABLE
+(defrule
+(or	(game-time >= 2100)
+	(and	(up-compare-const dm-game == 1)
+		(game-time >= 540)))
+	(up-timer-status resign-timer == timer-disabled)
+	(goal resign yes)
+=>
+	(chat-to-all "gg wp")
+	(enable-timer resign-timer 5)
+	(up-jump-rule 1))
+(defrule
+	(game-time < 2100)
+(nand	(up-compare-const dm-game == 1)
+	(game-time >= 540))
+	(up-timer-status resign-timer == timer-disabled)
+	(goal resign yes)
+=>
+	(chat-to-all "wp")
+	(enable-timer resign-timer 5))
+#end-if
+#load-if-defined UP-HUMAN-IN-GAME
+(defrule
+	(goal resign yes)
+	(up-timer-status resign-timer == timer-disabled)
+(or	(player-in-game any-ally)
+(or	(population-cap <= 50)
+	(goal underattack no)))
+	(game-time < 2520)
+=>
+	(set-goal resign 2)
+	(enable-timer resign-timer 32)
+	(disable-self))
+(defrule
+(or	(goal resign no)
+	(goal resign 2))
+	(up-timer-status resign-timer == timer-triggered)
+=>
+	(set-goal resign no)
+	(disable-timer resign-timer))
+(defrule
+	(goal resign no)
+(or	(game-time >= 2520)
+	(and	(up-timer-status resign-timer == timer-running)
+		(not	(player-in-game any-ally))))
+=>
+	(disable-timer resign-timer)
+	(disable-self))
+#end-if
+(defrule
+	(goal resign yes)
+	(up-timer-status resign-timer == timer-disabled)
+	(not(up-compare-const enable-resign == 0))
+=>
+	(chat-to-all-using-range 22300 22)
+	(chat-to-all-using-id 22322)
+	(enable-timer resign-timer 6))
+#end-if
+#load-if-not-defined DIFFICULTY-EXTREME
+#load-if-not-defined DIFFICULTY-HARDEST
+#load-if-not-defined DIFFICULTY-HARD
+#load-if-not-defined DIFFICULTY-MODERATE
+(defrule
+	(goal resign yes)
+	(up-timer-status resign-timer == timer-running)
+=>
+	(up-delete-objects c: castle c: 32767)
+	(up-delete-objects c: krepost c: 32767)
+	(up-delete-objects c: bombard-tower c: 32767)
+	(up-delete-objects c: watch-tower c: 32767)
+	(disable-self))
+#end-if
+#end-if
+#end-if
+#end-if
+
+(defrule
+	(not(player-in-game any-enemy))
+=>
+	(set-goal resign no)
+)
+
+(defrule
+	(timer-triggered resign-timer)
+	(goal resign yes)
+	(up-compare-const inf-game != yes)
+	(player-in-game any-ally)
+=>
+	(tribute-to-player this-any-ally wood 99999)
+	(tribute-to-player this-any-ally food 99999)
+	(tribute-to-player this-any-ally gold 99999)
+	(tribute-to-player this-any-ally stone 99999))
+(defrule
+	(timer-triggered resign-timer)
+	(goal resign yes)
+	(not(up-compare-const enable-resign == 0))
+=>
+	(resign))
+(defrule
+	(game-time >= 480)
+	(game-time < 2400)
+	(building-type-count town-center <= 0)
+	(civilian-population <= 0)
+	(building-type-count monastery <= 0)
+	(unit-type-count-total monk <= 0)
+	(building-type-count market <= 0)
+	(strategic-number teamsuperiority <= -3)
+	(military-population <= 1)
+	(up-compare-goal my-pop g:< target-pop)
+(not	(player-in-game any-human-ally))
+	(player-in-game any-human-enemy)
+	(up-timer-status resign-timer == timer-disabled)
+=>
+	;(chat-to-all "re?")
+	(set-goal resign yes);	(resign)
+)
+
+(defrule
+	(goal resign no)
+	(player-resigned any-ally)
+(not	(player-resigned any-enemy))
+=>
+	(up-jump-rule 2))
+(defrule
+	(true)
+=>
+	(up-store-player-chat target-player))
+#load-if-not-defined UP-MULTIPLE-ENEMIES
+(defrule
+	(up-timer-status threesec != timer-running)
+	(up-compare-text c: text-gg == 0)
+	(up-compare-text c: text-ggq < 0)
+	(game-time >= 500)
+(or	(game-time >= 750)
+	(up-compare-const dm-game == 1))
+(not	(stance-toward target-player ally))
+=>
+	(up-store-player-name focus-player)
+	(up-chat-data-to-all "gg wp %s" c: 7031232)
+	(disable-self))
+#else
+#load-if-defined DE-AVAILABLE
+(defrule
+	(up-timer-status threesec != timer-running)
+	(up-compare-text c: text-gg == 0)
+	(up-compare-text c: text-ggq < 0)
+	(game-time >= 500)
+(or	(game-time >= 750)
+	(up-compare-const dm-game == 1))
+(not	(stance-toward target-player ally))
+=>
+	(chat-to-all-using-id string-gg)
+	(disable-self))
+#else
+(defrule
+	(up-timer-status threesec != timer-running)
+(or	(player-resigned any-enemy)
+	(and	(not	(stance-toward target-player ally))
+		(and	(up-compare-text c: text-gg == 0)
+			(up-compare-text c: text-ggq < 0))))
+	(game-time >= 500)
+(or	(game-time >= 750)
+	(up-compare-const dm-game == 1))
+	(up-timer-status resign-timer == timer-disabled)
+=>
+	(chat-to-all "gg")
+	(disable-self))
+#end-if; end jump
+#end-if
+#load-if-defined DE-AVAILABLE
+#load-if-defined UP-PLAYER-4
+(defrule
+	(up-compare-const diff-fp == 1)
+	(up-timer-status threesec != timer-running)
+	(up-compare-text c: text-TheViper == 0)
+	(game-time >= 500)
+(or	(game-time >= 750)
+	(up-compare-const dm-game == 1))
+(not	(stance-toward target-player ally))
+=>
+	(chat-to-all "Always fun playing with you Vipi.")
+	(disable-self))
+#end-if
+#else
+#load-if-defined VICTORY-STANDARD
+(defrule
+	(game-time > 8)
+	(up-compare-goal victory-time >= 0)
+	(up-compare-goal victory-time <= 10)
+(not	(hold-relics))
+	(building-type-count wonder <= 0)
+	(players-building-type-count every-ally wonder <= 0)
+(or	(players-building-type-count any-enemy wonder >= 1)
+	(enemy-captured-relics))
+	(up-timer-status resign-timer == timer-disabled)
+=>
+	(chat-to-all "gg")
+	(disable-self))
+#end-if
+#end-if
+
+(defrule
+	(true)
+=>
+	(up-set-target-point building-point-x)
+	(up-full-reset-search))
+(defrule
+	(strategic-number sn-consecutive-idle-unit-limit >= 1)
+	(up-compare-const diff-fp != 1)
+	(up-add-object-by-id search-local g: scouting-unit)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-attack-stance != stance-stand-ground)
+=>
+	(up-target-point 0 action-none -1 stance-stand-ground))
+(defrule
+	(up-compare-goal forward-flag != 0)
+(or	(up-compare-goal forward-point-x != -1)
+	(up-compare-goal forward-point-y != -1))
+=>
+	(up-set-target-point forward-point-x))
+(defrule
+	(up-timer-status stance-timer != timer-running)
+(or	(strategic-number sn-total-number-explorers <= 0)
+	(military-population >= 2))
+	(military-population >= 1)
+(or	(goal attacking yes)
+;(or
+	(up-timer-status resetnow != timer-running)
+;(and;(or
+;	(up-projectile-detected projectile-fortification >= 5000)
+;	(up-compare-goal gl-threat-time >= 5000)))
+)
+=>
+	(up-set-attack-stance -1 c: stance-aggressive)
+	(enable-timer stance-timer 30))
+(defrule
+	(timer-triggered rebuild-camp)
+=>
+	(set-goal rebuildcamp yes)
+	(disable-timer rebuild-camp))
+(defrule
+	(up-timer-status threesec != timer-running)
+=>
+	(disable-timer threesec)
+	(enable-timer threesec 3))
+(defrule
+	(up-timer-status fivesec != timer-running)
+=>
+	(disable-timer fivesec)
+	(enable-timer fivesec 5))
+(defrule
+	(up-timer-status embassy != timer-running)
+=>
+	(disable-timer embassy)
+	(enable-timer embassy 10))
+(defrule
+	(up-timer-status fifteensec != timer-running)
+=>
+	(disable-timer fifteensec)
+	(enable-timer fifteensec 15))
+(defrule
+	(up-timer-status twentysec != timer-running)
+=>
+	(disable-timer twentysec)
+	(enable-timer twentysec 20))
+(defrule
+	(up-timer-status MSuperiority != timer-running)
+=>
+	(disable-timer MSuperiority)
+	(enable-timer MSuperiority 30))
+(defrule
+	(up-timer-status one-min != timer-running)
+=>
+	(disable-timer one-min)
+	(enable-timer one-min 60))
+(defrule
+	(up-timer-status two-mins != timer-running)
+=>
+	(disable-timer two-mins)
+	(enable-timer two-mins 120))
+(defrule
+	(up-timer-status market-flare-timer == timer-triggered)
+=>
+	(disable-timer market-flare-timer))
+;(defrule
+;	(true)
+;=>
+;	(up-chat-data-to-all "start time: %d" g: start-time)
+;	(up-get-precise-time start-time elapsed-time)
+;	(up-get-precise-time 0 elapsed-time)
+;	(up-chat-data-to-all "elapsed time: %d" g: elapsed-time))
+#load-if-defined DE-AVAILABLE
+(defrule
+(taunt-detected my-player-number 110)
+=>
+(up-chat-data-to-player my-player-number "strategy: %d" g: strategy)
+(up-chat-data-to-player my-player-number "Townsize: %d" s: sn-maximum-town-size)
+;(up-chat-data-to-player my-player-number "p-attack-soldiers: %d" s: sn-percent-attack-soldiers)
+(up-chat-data-to-player my-player-number "number-attack-groups: %d" s: sn-number-attack-groups)
+(up-chat-data-to-player my-player-number "increase-ts: %d" g: increase-ts)
+(up-chat-data-to-player my-player-number "underattack: %d" g: underattack)
+(up-chat-data-to-player my-player-number "attacking: %d" g: attacking)
+(up-chat-data-to-player my-player-number "milunits: %d" g: milunits)
+(acknowledge-taunt my-player-number 110))
+#end-if
+(defrule
+	(true)
+=>
+	(set-goal fastresign 0)
+	(disable-self)
+)
+#load-if-defined UP-HUMAN-IN-GAME
+#load-if-not-defined SCENARIO-MAP
+;can't reproduce the resign failure for now, but a possible workaround is to make resign more lenient if 105 taunted
+
+
+(defrule
+	(taunt-detected any-human 105)
+	;(up-compare-goal fastresign < 2)
+=>
+	;(up-modify-goal fastresign c:+ 1) ;0 = default beginner-friendly resign, 1 = more lenient resign (comparable to custom AIs), 
+	(acknowledge-taunt every-human 105);2= add score-based resignation
+	(acknowledge-taunt every-human 104);re-enable resign
+;	(chat-to-player-using-id this-any-human "22153")
+)
+
+(defrule
+	(taunt-detected any-human 205)
+=>
+	(acknowledge-taunt every-human 205)
+	(up-modify-goal fastresign c:+ 1)
+)
+(defrule
+	(taunt-detected any-human 104)
+=>
+	(set-goal fastresign 0)
+	(set-goal resign no)
+;	(acknowledge-taunt every-human 104)
+)
+
+(defrule
+	(game-time > 5)
+	(timer-triggered two-mins)
+=>
+;	(chat-to-player 1 "Quick resign activated")
+;	(up-chat-data-to-self "resign? %d" g: resign)
+	;(up-get-fact doctrine 0 temporary-goal)
+;	(up-chat-data-to-self "fast resign %d" g: fastresign)
+	(do-nothing)
+)
+
+
+(defrule
+	(up-compare-goal fastresign >= 1)
+	(or(and(population < fifty-pop)
+	(players-population every-enemy > eighty-pop))
+	(and(population < twenty-pop)
+	(players-population every-enemy > fifty-pop)))
+	(players-population every-ally < fifty-pop)
+=>
+	(set-goal resign yes)
+;	(disable-self)
+)
+
+(defrule
+	(up-compare-goal fastresign >= 1)
+	(population-cap >= 200)
+	(population < 80)
+	(players-population every-ally < 100)
+	(players-population every-enemy > 170)
+=>
+	(set-goal resign yes)
+;	(disable-self)
+)
+
+(defrule
+	(up-compare-goal fastresign >= 1)
+;	(taunt-detected any-enemy 107)
+	(true)
+=>
+	(up-get-fact-sum any-enemy population 0 temporary-goal)
+	(up-get-fact-sum any-ally population 0 temporary-goal2)
+	(up-get-fact population 0 temporary-goal3)
+	(up-modify-goal temporary-goal2 g:+ temporary-goal3)
+;	(up-chat-data-to-player my-player-number "Sum of allied pop %d" g: temporary-goal2)
+;	(up-chat-data-to-player my-player-number "Sum of enemy pop %d" g: temporary-goal1)
+)
+
+(defrule
+	(game-time > 1700)
+	(game-time <= 2700)
+	(up-compare-goal fastresign >= 1)
+=>
+	(up-modify-goal temporary-goal2 c:* 2)
+)
+
+(defrule
+	(game-time > 2699)
+	(up-compare-goal fastresign >= 1)
+=>
+	(up-modify-goal temporary-goal2 c:* 3)
+	(up-modify-goal temporary-goal2 c:/ 2)
+)
+
+(defrule
+;	(timer-triggered fifteensec)
+	(game-time > 1700)
+=>
+;	(up-chat-data-to-player 1 "Resign factor 1 %d" g: temporary-goal)
+;	(up-chat-data-to-player 1 "Resign comparison %d" g: temporary-goal2)
+	(do-nothing)
+)
+
+(defrule
+	(up-compare-goal fastresign >= 1)
+	(game-time > 1700)
+	(up-compare-goal temporary-goal2 g:< temporary-goal)
+;	(not(game-type 3));scenario
+	(not(player-in-game any-human-ally))
+=>
+	(set-goal resign yes)
+)
+
+; (defrule
+; 	(goal resign yes)
+; 	(up-compare-goal temporary-goal2 < temporary-goal)
+; =>
+; 	(chat-to-all "test message 1")
+; )
+
+; (defrule
+; 	(goal resign yes)
+; 	(up-compare-goal fastresign > 0)
+; =>
+; 	(chat-to-all "test message 2")
+; )
+
+; (defrule
+; 	(goal resign yes)
+; 	(goal fastresign 0)
+; =>
+; 	(chat-to-all "test message 3")
+; )
+
+;(defrule
+;	(up-compare-goal fast-resign >= 2)
+;=>
+;	(up-get-fact-sum any-enemy population g: temporary-goal)
+;	(up-get-fact-sum any-ally population g: temporary-goal2)
+;	(up-chat-data-to-all "Sum population %d" g: temporary-goal2)
+;)
+
+#end-if
+#end-if
+
+#load-if-not-defined SCENARIO-MAP
+#load-if-defined UP-HUMAN-IN-GAME
+; (defrule
+; (or	(taunt-detected any-human 105)
+; 	(taunt-detected my-player-number 105))
+; =>
+; 	(chat-to-allies-using-id 22153); "39 At once, sire!"
+; 	(acknowledge-taunt every-human 104)
+; 	(acknowledge-taunt my-player-number 104)
+; 	(acknowledge-taunt every-human 105)
+; 	(acknowledge-taunt my-player-number 105))
+#end-if
+#end-if
+;this has nothing to do with resignation but needs to be at the end of the AI
+
+(defrule	
+	(true)
+=>
+	(up-modify-sn three-rule-pass c:+ 1)
+	(up-modify-sn sn-thousand-rule-pass c:+ 1)
+)
+
+(defrule
+	(up-compare-sn three-rule-pass > 3)
+=>
+	(set-strategic-number three-rule-pass 1)
+)
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-rule-global-timer 0)
+	(disable-self)
+)
+
+(defrule
+	(strategic-number sn-rule-global-timer <= 32000);SNs are only 16-bit
+=>
+	(up-modify-sn sn-rule-global-timer c:+ 1)
+)
+
+;Debug rule
+
+
+(defrule
+    (true)
+=>
+    (set-strategic-number sn-turn-count 0)
+    (set-strategic-number sn-ten-turns 0)
+    (disable-self)
+)
+
+(defrule
+    (true)
+=>
+	(up-modify-goal fishing-ship-disable-ungarrison-timer c:- 1)
+    (up-modify-sn sn-turn-count c:+ 1)
+    (up-modify-sn sn-ten-turns s:= sn-turn-count)
+    (up-modify-sn sn-ten-turns c:mod 10)
+    (up-modify-sn sn-five-turns s:= sn-turn-count)
+    (up-modify-sn sn-five-turns c:mod 5)
+    (up-modify-sn sn-two-turns s:= sn-turn-count)
+    (up-modify-sn sn-two-turns c:mod 2)
+;    (up-modify-sn sn-ten-turns s:= sn-turn-count)
+    (up-modify-sn sn-twenty-turns s:= sn-turn-count)
+    (up-modify-sn sn-twenty-turns c:mod 20)
+    ; (up-chat-data-to-player my-player-number "SN 1 %d" s: sn-turn-count)
+    ; (up-chat-data-to-player my-player-number "SN 2 %d" s: sn-two-turns)
+    ; (up-chat-data-to-player my-player-number "SN 5 %d" s: sn-five-turns)
+    ; (up-chat-data-to-player my-player-number "SN 10 %d" s: sn-ten-turns)
+    ; (up-chat-data-to-player my-player-number "SN 20 %d" s: sn-twenty-turns)
+)
+
+(defrule
+	;(up-compare-sn sn-twenty-turns == 1)
+	(up-modify-goal temporary-goal3 s:= sn-turn-count)
+	(up-modify-goal temporary-goal3 c:mod 100)
+	(up-compare-goal temporary-goal3 == 3)
+=>
+	(up-modify-goal temporary-goal2 s:= time-storage)
+	(up-get-precise-time 0 temporary-goal)
+	(up-modify-sn time-storage g:= temporary-goal)
+	(up-modify-goal temporary-goal g:- temporary-goal2)
+	(up-modify-goal temporary-goal c:/ 100);20
+	(up-modify-sn turn-time-estimate g:= temporary-goal)
+	(up-modify-sn turn-time-estimate c:max 20)
+	(up-modify-sn turn-time-estimate c:min 2000);just make sure it's something reasonable - slight risk of overflow and pausing disrupts this method
+;	(up-chat-data-to-player 1 "AI turn time %d" s: turn-time-estimate)
+)
+
+(defrule
+	(game-time < 180)
+=>
+	(set-strategic-number turn-time-estimate 500)
+)
+

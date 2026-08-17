@@ -1,0 +1,193 @@
+#load-if-defined UP-PLAYER-9
+(defconst contact-delay 2562)
+#end-if
+#load-if-defined UP-PLAYER-10
+(defconst contact-delay 3316)
+#end-if
+#load-if-defined UP-PLAYER-11
+(defconst contact-delay 2914)
+#end-if
+#load-if-defined UP-PLAYER-12
+(defconst contact-delay 3612)
+#end-if
+#load-if-defined UP-PLAYER-13
+(defconst contact-delay 2604)
+#end-if
+#load-if-defined UP-PLAYER-14
+(defconst contact-delay 3718)
+#end-if
+#load-if-defined UP-PLAYER-15
+(defconst contact-delay 3108)
+#end-if
+#load-if-defined UP-PLAYER-16
+(defconst contact-delay 2305)
+#end-if
+
+
+#load-if-defined UP-9-PLAYER-GAME
+(defconst max-players 9)
+#end-if
+#load-if-defined UP-10-PLAYER-GAME
+(defconst max-players 10)
+#end-if
+#load-if-defined UP-11-PLAYER-GAME
+(defconst max-players 11)
+#end-if
+#load-if-defined UP-12-PLAYER-GAME
+(defconst max-players 12)
+#end-if
+#load-if-defined UP-13-PLAYER-GAME
+(defconst max-players 13)
+#end-if
+#load-if-defined UP-14-PLAYER-GAME
+(defconst max-players 14)
+#end-if
+#load-if-defined UP-15-PLAYER-GAME
+(defconst max-players 15)
+#end-if
+#load-if-defined UP-16-PLAYER-GAME
+(defconst max-players 16)
+#end-if
+
+
+
+(defrule
+(nor	(taunt-detected any-human-ally 169)
+(or	(taunt-detected any-human-ally 170)
+(or	(taunt-detected any-human-ally 171)
+(or	(taunt-detected any-human-ally 172)
+(or	(taunt-detected any-human-ally 173)
+(or	(taunt-detected any-human-ally 174)
+(or	(taunt-detected any-human-ally 175)
+	(taunt-detected any-human-ally 176))))))))
+=>
+	(up-jump-rule 8))
+
+
+(defrule
+	(taunt-detected any-human-ally 169)
+(nor	(stance-toward 9 ally)
+	(player-number 9))
+	(player-in-game 9)
+	(players-building-count 8 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 9)
+	(set-strategic-number sn-focus-player-number 9)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 169)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 170)
+(nor	(stance-toward 10 ally)
+	(player-number 10))
+	(player-in-game 10)
+	(players-building-count 10 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 10)
+	(set-strategic-number sn-focus-player-number 10)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 170)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 171)
+(nor	(stance-toward 11 ally)
+	(player-number 11))
+	(player-in-game 11)
+	(players-building-count 11 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 11)
+	(set-strategic-number sn-focus-player-number 11)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 171)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 172)
+(nor	(stance-toward 12 ally)
+	(player-number 12))
+	(player-in-game 12)
+	(players-building-count 12 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 12)
+	(set-strategic-number sn-focus-player-number 12)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 172)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 173)
+(nor	(stance-toward 13 ally)
+	(player-number 13))
+	(player-in-game 13)
+	(players-building-count 13 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 13)
+	(set-strategic-number sn-focus-player-number 13)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 173)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 174)
+(nor	(stance-toward 14 ally)
+	(player-number 14))
+	(player-in-game 14)
+	(players-building-count 14 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 14)
+	(set-strategic-number sn-focus-player-number 14)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 174)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 175)
+(nor	(stance-toward 15 ally)
+	(player-number 15))
+	(player-in-game 15)
+	(players-building-count 15 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 15)
+	(set-strategic-number sn-focus-player-number 15)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 175)); end jump
+
+(defrule
+	(taunt-detected any-human-ally 176)
+(nor	(stance-toward 16 ally)
+	(player-number 16))
+	(player-in-game 16)
+	(players-building-count 16 >= 1); eligible for targeting
+=>
+	(set-strategic-number sn-target-player-number 16)
+	(set-strategic-number sn-focus-player-number 16)
+	(set-goal retargetenemy 5); block retargeting
+	;(chat-to-allies text-targetting-this-enemy-10)
+	;(chat-to-allies text-if-i-dont-kill-him-faster)
+	(chat-to-player-using-id every-ally 22026); "It shall be war to the knife!"
+	(enable-timer human-coop-timer 600)
+	(acknowledge-taunt every-ally 176)); end jump

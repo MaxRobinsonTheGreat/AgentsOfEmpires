@@ -1,0 +1,96 @@
+; strat_counter.per - per-class counter targeting ("counter")
+; The mirror comp has a rock-paper-scissors structure; assign each of our
+; groups its winning matchup:
+;   pikes (12)         -> enemy mounted samurai (cavalry-class)
+;   elite skirms (12)  -> enemy archery (arbalests + skirms)
+;   arbalests (12)     -> enemy spearmen
+;   elite samurai (16) -> enemy spearmen (samurai shred melee)
+;   mounted samurai (8)-> enemy siege (fast dive)
+; Our own siege is left on auto-engage (area damage into the brawl).
+; NOTE: each rule is self-contained (full reset first) so search lists
+; never leak between pairings within a rule pass.
+
+(defrule
+    (true)
+=>
+    (up-change-name "counter")
+    (set-strategic-number sn-number-attack-groups 40)
+    (set-strategic-number sn-minimum-attack-group-size 1)
+    (set-strategic-number sn-maximum-attack-group-size 200)
+    (set-strategic-number sn-percent-attack-soldiers 100)
+    (set-strategic-number sn-attack-intelligence 1)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (enable-timer 1 6)
+    (disable-self)
+)
+
+; --- heartbeat FIRST: general charge for everyone (DUC rules below re-task
+;     their groups afterwards, since later orders within a pass win) ---
+(defrule
+    (timer-triggered 1)
+=>
+    (attack-now)
+)
+
+; --- pikes -> cavalry ---
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-modify-sn sn-focus-player-number s:= sn-target-player-number)
+    (up-find-remote c: cavalry-class c: 1)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: spearman-line c: 30)
+    (up-target-objects 1 action-default -1 -1)
+)
+
+; --- skirms -> archery ---
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: archery-class c: 1)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: elite-skirmisher c: 30)
+    (up-target-objects 1 action-default -1 -1)
+)
+
+; --- arbalests -> spearmen ---
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: spearman-line c: 1)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: arbalest c: 30)
+    (up-target-objects 1 action-default -1 -1)
+)
+
+; --- samurai -> spearmen ---
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: spearman-line c: 1)
+    (up-set-target-object search-remote c: 1)
+    (up-find-local c: elite-samurai c: 30)
+    (up-target-objects 1 action-default -1 -1)
+)
+
+; --- mounted samurai -> siege ---
+(defrule
+    (timer-triggered 1)
+=>
+    (up-full-reset-search)
+    (up-find-remote c: siege-weapon-class c: 1)
+    (up-set-target-object search-remote c: 0)
+    (up-find-local c: cavalry-class c: 20)
+    (up-target-objects 1 action-default -1 -1)
+)
+
+; --- re-arm the pulse timer ---
+(defrule
+    (timer-triggered 1)
+=>
+    (enable-timer 1 6)
+)

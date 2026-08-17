@@ -1,0 +1,1090 @@
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-number-explore-groups 3)
+	(set-strategic-number sn-consecutive-idle-unit-limit consecutive-idle-unit-limit)
+	(set-strategic-number sn-home-exploration-time 0)
+	(set-strategic-number sn-percent-enemy-sighted-response enemy-sighted-response-percentage)
+	(set-strategic-number sn-enemy-sighted-response-distance enemy-sighted-response-distance)
+	(set-strategic-number sn-initial-exploration-required 0)
+	(up-change-name -1)
+	(set-strategic-number sn-wall-targeting-mode 1)
+	(set-escrow-percentage food escrowing-percentage)
+	(set-escrow-percentage wood escrowing-percentage)
+	(set-escrow-percentage gold escrowing-percentage)
+	(set-escrow-percentage stone escrowing-percentage)
+	(up-get-fact population-cap 0 gl-population-cap)
+	(disable-self)
+)
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-enable-patrol-attack 1)
+	(set-strategic-number sn-local-targeting-mode 1)
+	(disable-self)
+)
+#end-if
+#end-if
+#end-if
+(defrule
+(or	(up-compare-goal gl-did-attack != 0)
+	(up-compare-goal gl-did-capture != 0))
+=>
+	(set-goal gl-did-attack 0)
+	(set-goal gl-did-capture 0)
+	(up-jump-rule 1000)
+)
+(defrule
+	(true)
+=>
+	(up-get-point position-center gl-center-x)
+	(set-strategic-number sn-dock-training-filter 0)
+	(up-get-fact-sum any-enemy warboat-count 0 334)
+)
+(defrule
+	(up-compare-goal 333 >= 1)
+=>
+	(up-modify-goal 333 c:- 1)
+	(up-jump-rule 1000)
+)
+(defrule
+	(up-compare-goal 334 >= 1)
+=>
+	(set-strategic-number sn-dock-training-filter 2)
+	(up-jump-rule 1))
+(defrule
+	(warboat-count >= 1)
+=>
+	(set-strategic-number sn-dock-training-filter 1))
+(defrule
+	(true)
+=>
+	(set-goal 333 consecutive-jumps)
+)
+(defrule
+	(true)
+=>
+	(set-goal 333 my-player-number)
+	(up-modify-goal 333 c:* 2)
+	(disable-self)
+)
+
+(defrule
+	(can-train bombard-cannon)
+=>
+	(train bombard-cannon)
+)
+(defrule
+	(military-population >= 10)
+	(players-building-count any-enemy >= 1)
+(or	(unit-type-count-total trebuchet-set < 4)
+	(population >= 180))
+	(unit-type-count-total trebuchet-set < 12)
+	(can-train trebuchet)
+=>
+	(train trebuchet)
+)
+(defrule
+	(up-research-status c: ri-capped-ram >= research-available)
+(or	(unit-type-count battering-ram-line <= 0)
+	(military-population >= 20))
+	(can-train battering-ram-line)
+=>
+	(train battering-ram-line)
+)
+(defrule
+	(building-type-count castle <= 0)
+	(building-type-count krepost <= 0)
+	(building-type-count barracks <= 0)
+	(building-type-count archery-range <= 0)
+	(building-type-count siege-workshop <= 0)
+	(building-type-count monastery <= 0)
+=>
+	(up-jump-rule 1))
+(defrule
+	(warboat-count >= 1)
+	(strategic-number sn-dock-training-filter < 2)
+(or	(wood-amount < 425)
+	(gold-amount < 375))
+(or	(building-type-count dock < 4)
+	(strategic-number sn-dock-training-filter < 1))
+=>
+	(up-jump-rule 7))
+(defrule
+	(up-research-status c: ri-elite-turtle-ship >= research-available)
+	(can-train turtle-ship-line)
+=>
+	(train turtle-ship-line)
+)
+(defrule
+	(up-research-status c: ri-elite-longboat >= research-available)
+	(can-train longboat-line)
+=>
+	(train longboat-line)
+)
+(defrule
+	(up-research-status c: ri-elite-caravel >= research-available)
+	(can-train caravel-line)
+=>
+	(train caravel-line)
+)
+(defrule
+(or	(up-research-status c: ri-deck-guns >= research-available)
+	(strategic-number sn-dock-training-filter <= 0))
+	(can-train siege-ship)
+=>
+	(train siege-ship)
+)
+(defrule
+	(strategic-number sn-dock-training-filter >= 1)
+	(up-research-status c: ri-heavy-demolition-ship >= research-available)
+	(can-train demolition-ship-line)
+=>
+	(train demolition-ship-line)
+)
+(defrule
+	(strategic-number sn-dock-training-filter >= 1)
+	(up-research-status c: ri-fast-fire-ship >= research-available)
+	(can-train fire-ship-line)
+=>
+	(train fire-ship-line)
+)
+(defrule
+(or	(up-research-status c: ri-galleon >= research-available)
+	(and	(not	(can-train siege-ship))
+		(strategic-number sn-dock-training-filter <= 0)))
+	(can-train galley-line)
+=>
+	(train galley-line)
+)
+
+(defrule ;paphos ships
+	(warboat-count >= 1)
+	(strategic-number sn-dock-training-filter < 2)
+(or	(wood-amount < 425)
+	(gold-amount < 375))
+(or	(building-type-count shipyard < 4)
+	(strategic-number sn-dock-training-filter < 1))
+=>
+	(up-jump-rule 5))
+(defrule
+	(up-research-status c: ri-elite-ramming-ship >= research-available)
+	(can-train ramming-ship-line)
+=>
+	(train ramming-ship-line)
+)
+
+(defrule
+	(up-research-status c: ri-elite-arrow-ship >= research-available)
+	(can-train arrow-ship-line)
+=>
+	(train arrow-ship-line)
+
+)
+
+(defrule
+	(up-research-status c: ri-heavy-incendiary-ship >= research-available)
+	(can-train incendiary-ship-line)
+=>
+	(train incendiary-ship-line)
+)
+
+(defrule
+	(strategic-number sn-dock-training-filter >= 1)
+	(up-research-status c: ri-heavy-mangonel-ship >= research-available)
+	(can-train mangonel-ship-line)
+=>
+	(train mangonel-ship-line)
+)
+
+(defrule
+	(strategic-number sn-dock-training-filter <= 0)
+	(can-train octeres)
+=>
+	(train octeres)
+)
+
+(defrule ;paphos ships
+	(warboat-count >= 1)
+	(strategic-number sn-dock-training-filter < 2)
+(or	(wood-amount < 225)
+	(food-amount < 175))
+(or	(building-type-count port < 2)
+	(strategic-number sn-dock-training-filter < 1))
+=>
+	(up-jump-rule 1))
+
+(defrule
+	(strategic-number sn-dock-training-filter >= 1)
+	(up-research-status c: ri-elite-raiding-ship >= research-available)
+	(can-train scout-ship-line)
+=>
+	(train scout-ship-line)
+)
+
+(defrule
+	(up-research-status c: ri-heavy-cavalry-archer >= research-available)
+	(can-train cavalry-archer-line)
+=>
+	(train cavalry-archer-line)
+)
+(defrule
+	(up-research-status c: ri-arbalest >= research-available)
+	(can-train archer-line)
+=>
+	(train archer-line)
+)
+(defrule
+	(can-train hand-cannoneer)
+=>
+	(train hand-cannoneer)
+)
+(defrule
+	(can-train slinger)
+=>
+	(train slinger)
+)
+(defrule
+	(research-completed ri-elite-genitour)
+(or	(can-train genitour-line)
+	(can-train 1079))
+=>
+	(train 1079)
+	(train genitour-line)
+)
+(defrule
+	(up-research-status c: ri-elite-skirmisher >= research-available)
+	(can-train skirmisher-line)
+=>
+	(train skirmisher-line)
+)
+(defrule
+	(up-research-status c: ri-elite-eagle-warrior >= research-available)
+	(can-train eagle-warrior-line)
+=>
+	(train eagle-warrior-line)
+)
+(defrule
+	(can-train condottiero)
+=>
+	(train condottiero)
+)
+(defrule
+	(up-research-status c: ri-champion >= research-available)
+	(can-train militiaman-line)
+=>
+	(train militiaman-line)
+)
+(defrule
+	(up-research-status c: ri-pikeman >= research-available)
+	(can-train spearman-line)
+=>
+	(train spearman-line)
+)
+(defrule
+	(up-research-status c: ri-onager >= research-available)
+	(can-train mangonel-line)
+=>
+	(train mangonel-line)
+)
+(defrule
+	(up-research-status c: ri-heavy-scorpion >= research-available)
+	(can-train scorpion-line)
+=>
+	(train scorpion-line)
+)
+(defrule
+	(up-research-status c: ri-elite-battle-elephant >= research-available)
+	(can-train battle-elephant-line)
+=>
+	(train battle-elephant-line)
+)
+(defrule
+	(up-research-status c: ri-elite-steppe-lancer >= research-available)
+	(can-train steppe-lancer-line)
+=>
+	(train steppe-lancer-line)
+)
+(defrule
+	(up-research-status c: ri-cavalier >= research-available)
+	(can-train knight-line)
+=>
+	(train knight-line)
+)
+(defrule
+	(up-research-status c: ri-heavy-camel >= research-available)
+	(can-train camel-line)
+=>
+	(train camel-line)
+)
+(defrule
+	(up-research-status c: ri-hussar >= research-available)
+	(can-train scout-cavalry-line)
+=>
+	(train scout-cavalry-line)
+)
+(defrule
+	(can-train aztec-raider)
+=>
+	(train aztec-raider)
+)
+(defrule
+	(can-train my-unique-unit-line)
+=>
+	(train my-unique-unit-line)
+)
+(defrule
+(or	(can-train 759)
+	(can-train 761))
+=>
+	(train 759)
+	(train 761)
+)
+(defrule
+(or	(can-train 886)
+	(can-train 887))
+=>
+	(train 886)
+	(train 887)
+)
+(defrule
+(or	(can-train 1254)
+	(can-train 1255))
+=>
+	(train 1254)
+	(train 1255)
+)
+(defrule
+	(can-train 1260)
+=>
+	(train 1260)
+)
+(defrule
+(or	(gold-amount >= 325)
+	(unit-type-count-total 918 <= 0))
+	(can-train missionary)
+=>
+	(train missionary)
+	(up-jump-rule 1)
+)
+(defrule
+(or	(gold-amount >= 325)
+	(unit-type-count-total 918 <= 0))
+	(can-train monk)
+=>
+	(train monk)
+)
+(defrule
+(or	(players-unit-type-count any-enemy battle-elephant-line >= 2)
+(or	(players-unit-type-count any-enemy war-elephant-line >= 2)
+(or	(players-unit-type-count any-enemy elephant-archer-line >= 2)
+(or	(players-unit-type-count any-enemy ballista-elephant-line >= 2)
+	(and	(food-amount >= 375)
+		(gold-amount >= 330))))))
+	(can-train flaming-camel)
+=>
+	(train flaming-camel)
+)
+(defrule
+	(food-amount >= 365)
+	(gold-amount >= 320)
+	(can-train petard)
+=>
+	(train petard)
+)
+
+(defrule
+	(up-research-status c: ri-elite-war-chariot >= research-available)
+	(can-train war-chariot)
+=>
+	(train war-chariot)
+)
+
+(defrule
+	(up-research-status c: ri-elite-hoplite >= research-available)
+	(can-train hoplite)
+=>
+	(train hoplite)
+)
+
+(defrule
+	(up-research-status c: ri-elite-phalangite >= research-available)
+	(can-train phalangite-line)
+=>
+	(train phalangite-line)
+)
+
+(defrule
+	(up-research-status c: ri-elite-sannahya >= research-available)
+	(can-train sannahya-line)
+=>
+	(train sannahya-line)
+)
+
+;#load-if-not-defined DIFFICULTY-EASIEST
+;#load-if-not-defined DIFFICULTY-EASY
+;#load-if-not-defined DIFFICULTY-MODERATE
+(defrule
+	(game-time < 60)
+;	(game-time >= 2)
+	(game-time > initial-delay)
+	(building-count <= 0)
+;	(building-type-count-total workshop < 1)
+	(military-population >= 1)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 40)
+	(up-clean-search search-local object-data-speed search-order-desc)
+	(up-remove-objects search-local object-data-index >= 1)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-object-x)
+	(up-lerp-percent gl-object-x gl-center-x c: 33)
+	(up-set-target-point gl-object-x)
+	(up-target-point 0 action-move -1 -1)
+	(disable-self)
+)
+
+(defrule
+	(game-time > 61)
+	(game-time < 300)
+=>
+;	(fe-break-point 1 c:== 1 -1)
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 40)
+	(up-clean-search search-local object-data-speed search-order-desc)
+	(up-remove-objects search-local object-data-index >= 1)
+
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object br-temp-point-x)
+	(up-get-object-data object-data-move-x gl-object2-x)
+	(up-get-object-data object-data-move-y gl-object2-y)
+)
+
+(defrule
+	(game-time > 61)
+	(game-time < 300)
+	(building-count <= 0)
+	(building-type-count-total workshop < 1)
+	(military-population >= 1)
+
+	(up-set-target-object search-local c: 0)
+	;(up-object-data object-data-order != orderid-move)
+	(up-object-data object-data-move-x g:== br-temp-point-x)
+	(up-object-data object-data-move-y g:== br-temp-point-y)
+=>
+	(up-get-point position-map-size br-temp-point-x)
+	(generate-random-number 1000)
+	(up-get-fact random-number 0 temp-goal)
+	(generate-random-number 1000)
+	(up-get-fact random-number 0 temp-goal2)
+	(up-modify-goal temp-goal g:mod br-temp-point-x)
+	(up-modify-goal temp-goal2 g:mod br-temp-point-y)
+	(up-modify-goal gl-object-x g:= temp-goal)
+	(up-modify-goal gl-object-y g:= temp-goal2)
+	(up-bound-point gl-object-x gl-object-x)
+	(up-lerp-percent gl-object-x gl-center-x c: 25)
+	(up-get-point position-object gl-object2-x)
+	(up-lerp-percent gl-object-x gl-object2-x c: 75)
+	(up-set-target-point gl-object-x)
+	(up-target-point 0 action-move -1 -1)
+)
+;#end-if
+;#end-if
+;#end-if
+
+
+(defrule
+	(game-time > 91)
+	(game-time < 550)
+	(building-type-count-total workshop > 0)
+	(building-type-count-total barracks < 1)
+	(building-type-count-total archery-range < 1)
+	(building-type-count-total stable < 1)
+	(building-type-count-total siege-workshop < 1)
+	(building-type-count-total castle < 1)
+	(up-set-target-object search-local c: 0)
+	;(up-object-data object-data-order != orderid-move)
+	(or(timer-triggered 5)
+	(and(up-object-data object-data-move-x g:== br-temp-point-x)
+	(up-object-data object-data-move-y g:== br-temp-point-y)))
+;	(up-point-distance br-temp-point-x gl-object2-x < 7)
+=>
+	(up-get-point position-map-size br-temp-point-x)
+	(generate-random-number 1000)
+	(up-get-fact random-number 0 temp-goal)
+	(generate-random-number 1000)
+	(up-get-fact random-number 0 temp-goal2)
+	(up-modify-goal temp-goal g:mod br-temp-point-x)
+	(up-modify-goal temp-goal2 g:mod br-temp-point-y)
+	(up-modify-goal gl-object-x g:= temp-goal)
+	(up-modify-goal gl-object-y g:= temp-goal2)
+	(up-bound-point gl-object-x gl-object-x)
+	(up-get-point position-object gl-object2-x)
+	(up-lerp-percent gl-object-x gl-object2-x c: 75)
+	(up-lerp-percent gl-object-x gl-center-x c: -25)
+	(up-set-target-point gl-object-x)
+	(up-target-point 0 action-attack-move -1 -1)
+)
+
+(defrule
+	(up-timer-status 3 != timer-running)
+	(military-population <= 3)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 3)
+	(up-remove-objects search-local object-data-hero != 1)
+	(up-clean-search search-local object-data-maxhp search-order-asc)
+	(up-set-target-object search-local c: 0)
+	(up-get-object-data object-data-maxhp temp-goal)
+	(up-get-point position-object gl-object-x)
+	(up-set-target-point gl-object-x)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-filter-distance c: -1 c: 10)
+	(up-find-remote c: all-units-class c: 10)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-object2-x)
+	(up-lerp-tiles gl-object-x gl-object2-x c: -12)
+	(up-set-target-point gl-object-x)
+	(up-remove-objects search-local object-data-hitpoints g:>= temp-goal)
+	(up-get-search-state gl-local-total)
+)
+(defrule
+	(up-timer-status 3 != timer-running)
+	(military-population <= 3)
+	(up-compare-goal gl-remote-total g:> gl-local-total)
+	(up-set-target-object search-remote c: 0)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-hitpoints < 64)
+	(up-point-terrain gl-object-x != TERRAIN_KILLER_FOG)
+=>
+	(up-target-point 0 action-move -1 -1)
+	(enable-timer 3 8)
+	(up-jump-rule 1)
+)
+(defrule
+	(up-timer-status 3 != timer-running)
+	(military-population <= 3)
+	(up-set-target-object search-remote c: 0)
+	(up-object-data object-data-hitpoints >= 32)
+	(up-set-target-object search-local c: 0)
+	(up-object-data object-data-hitpoints < 32)
+	(up-point-terrain gl-object-x != TERRAIN_KILLER_FOG)
+=>
+	(up-target-point 0 action-move -1 -1)
+	(enable-timer 3 8)
+)
+(defrule
+	(up-timer-status 3 == timer-running)
+=>
+	(up-jump-rule 21)
+)
+(defrule
+	(housing-headroom <= 0)
+=>
+	(up-full-reset-search)
+	(up-find-local c: all-units-class c: 240)
+)
+(defrule
+	(goal found-gaia 1)
+=>
+	(up-remove-objects search-local object-data-hero == 1)
+)
+(defrule
+	(housing-headroom <= 0)
+=>
+	(up-target-point gl-center-x action-patrol -1 stance-aggressive)
+	(enable-timer 3 15)
+)
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-move -1 -1)
+	(up-find-local c: all-units-class c: 20)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-filters)
+	(set-goal temp-goal 0))
+(defrule
+	(up-set-target-object search-local g: temp-goal)
+=>
+	(up-get-point position-object gl-object-x)
+	(up-set-target-point gl-object-x)
+	(up-filter-distance c: -1 c: 12)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-remote c: all-units-class c: 40)
+	(up-remove-objects search-remote object-data-capture-flag != 0)
+	(up-get-search-state gl-local-total)
+)
+(defrule
+	(up-set-target-object search-local g: temp-goal)
+	(up-compare-goal gl-remote-total == 0)
+=>
+	(up-modify-goal temp-goal c:+ 1)
+	(up-reset-search 0 0 1 1)
+	(up-jump-rule -2)
+)
+(defrule
+	(up-compare-goal gl-local-total > 0)
+	(up-compare-goal gl-remote-total > 0)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-reset-filters)
+	(up-reset-search 1 1 0 0)
+	(up-get-fact building-count 0 temp-goal)
+	(up-modify-goal temp-goal c:* -10)
+	(up-modify-goal temp-goal c:max -50)
+	(up-modify-goal temp-goal c:+ 75)
+	(up-filter-distance c: -1 g: temp-goal)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 40)
+	(up-remove-objects search-local object-data-target-id >= 0)
+	(up-clean-search search-local object-data-maxhp search-order-desc)
+	(up-clean-search search-remote object-data-maxhp search-order-desc)
+	(up-get-search-state gl-local-total)
+)
+(defrule
+	(up-set-target-object search-remote c: 0)
+	(up-set-target-object search-local c: 0)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-modify-goal temp-goal2 g:= gl-local-total)
+	(up-get-object-data object-data-maxhp temp-goal)
+	(up-modify-goal temp-goal2 g:* temp-goal)
+	(up-get-object-data object-data-strike-armor temp-goal)
+	(up-modify-goal temp-goal2 g:+ temp-goal)
+	(up-get-object-data object-data-pierce-armor temp-goal)
+	(up-modify-goal temp-goal2 g:+ temp-goal)
+	(up-get-object-data object-data-base-attack temp-goal)
+	(up-modify-goal temp-goal2 g:+ temp-goal)
+	(up-get-fact game-time 0 temp-goal)
+	(up-modify-goal temp-goal2 g:+ temp-goal)
+)
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-modify-goal temp-goal3 g:= gl-remote-total)
+	(up-get-object-data object-data-maxhp temp-goal)
+	(up-modify-goal temp-goal3 g:* temp-goal)
+	(up-get-object-data object-data-strike-armor temp-goal)
+	(up-modify-goal temp-goal3 g:+ temp-goal)
+	(up-get-object-data object-data-pierce-armor temp-goal)
+	(up-modify-goal temp-goal3 g:+ temp-goal)
+	(up-get-object-data object-data-base-attack temp-goal)
+	(up-modify-goal temp-goal3 g:+ temp-goal)
+)
+(defrule
+	(up-compare-goal gl-local-total > 0)
+	(up-compare-goal gl-remote-total > 0)
+	(up-compare-goal temp-goal2 g:>= temp-goal3)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-target-objects 0 action-default -1 -1)
+	(set-goal gl-did-attack 1)
+	(enable-timer 3 6)
+	(up-jump-rule 11)
+)
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 40)
+	(up-remove-objects search-local object-data-target-id >= 0)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-filters)
+	(up-filter-exclude cmdid-military -1 -1 -1)
+	(up-find-remote c: all-units-class c: 40)
+	(up-remove-objects search-remote object-data-capture-flag != 2)
+	(up-remove-objects search-remote object-data-ownership != -1)
+	(up-get-search-state gl-local-total)
+)
+(defrule
+	(goal gl-did-attack 0)
+	(up-compare-goal gl-remote-total > 0)
+	(up-compare-goal gl-local-total > 0)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-object-x)
+	(up-set-target-point gl-object-x)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-target-objects 0 action-move -1 -1)
+	(set-goal gl-did-capture 1)
+	(enable-timer 3 6)
+	(up-jump-rule 9)
+)
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-attack orderid-attack -1)
+	(up-find-local c: all-units-class c: 40)
+	(up-remove-objects search-local object-data-target-id >= 0)
+	(up-remove-objects search-local object-data-under-attack == 1)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-reset-filters)
+)
+(defrule
+	(goal gl-did-capture 0)
+	(goal gl-did-attack 0)
+	(up-set-target-object search-local c: 0)
+	(strategic-number sn-focus-player-number != my-player-number)
+	(players-stance focus-player enemy)
+=>	
+	(up-find-remote c: building-class c: 40)
+	(up-find-remote c: tower-class c: 40)
+	(up-remove-objects search-remote object-data-capture-flag != 2)
+	(up-remove-objects search-remote object-data-ownership != -1)
+	(up-get-search-state gl-local-total)
+)
+(defrule
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+(defrule
+	(goal gl-did-capture 0)
+	(goal gl-did-attack 0)
+	(up-compare-goal gl-remote-total > 0)
+	(up-set-target-object search-local c: 0)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-get-point position-object gl-object-x)
+	(up-set-target-point gl-object-x)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+	(up-set-target-object search-remote c: 0)
+	(up-get-point position-object gl-object-x)
+	(up-set-target-point gl-object-x)
+	(up-get-object-data object-data-player temp-goal)
+	(up-modify-sn sn-focus-player-number g:= temp-goal)
+	(up-reset-filters)
+	(up-reset-search 0 0 1 1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-remote c: all-units-class c: 40)
+	(up-get-search-state gl-local-total)
+	(set-goal temp-goal 214081)
+)
+(defrule
+	(goal temp-goal 214081)
+	(up-compare-goal gl-remote-total <= 0)
+=>
+	(up-target-point 0 action-move -1 -1)
+	(enable-timer 3 6)
+	(up-jump-rule 4)
+)
+(defrule
+	(goal gl-did-capture 0)
+	(goal gl-did-attack 0)
+	(up-compare-goal gl-remote-total > 0)
+	(up-set-target-object search-local c: 0)
+	(military-population < 100)
+	(population g:< gl-population-cap)
+=>
+	(up-target-point 0 action-patrol -1 stance-aggressive)
+	(enable-timer 3 6)
+	(up-jump-rule 3)
+)
+(defrule
+(or	(housing-headroom <= 0)
+(or	(population g:>= gl-population-cap)
+	(military-population >= 100)))
+=>
+	(up-full-reset-search)
+	(up-set-target-point gl-center-x)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-distance c: 6 c: -1)
+	(up-find-local c: all-units-class c: 240)
+)
+(defrule
+	(goal found-gaia 1)
+=>
+	(up-remove-objects search-local object-data-hero == 1)
+)
+(defrule
+	(up-set-target-object search-local c: 0)
+(or	(housing-headroom <= 0)
+(or	(population g:>= gl-population-cap)
+	(military-population >= 100)))
+=>
+	(up-remove-objects search-local object-data-target-id >= 0)
+	(up-target-point gl-center-x action-patrol -1 stance-aggressive)
+	(enable-timer 3 15)
+)
+
+#load-if-not-defined DIFFICULTY-EASIEST
+#load-if-not-defined DIFFICULTY-EASY
+#load-if-not-defined DIFFICULTY-MODERATE
+(defrule
+	(food-amount < 100)
+(or	(gold-amount >= 400)
+	(wood-amount >= 600))
+	(can-buy-commodity food)
+=>
+	(buy-commodity food)
+)
+(defrule
+	(wood-amount < 100)
+(or	(gold-amount >= 400)
+	(food-amount >= 600))
+	(can-buy-commodity wood)
+=>
+	(buy-commodity wood)
+)
+(defrule
+	(can-sell-commodity stone)
+=>
+	(sell-commodity stone)
+)
+(defrule
+	(wood-amount >= 600)
+(or	(gold-amount < 225)
+	(food-amount < 100))
+	(can-sell-commodity wood)
+=>
+	(sell-commodity wood)
+)
+(defrule
+	(food-amount >= 600)
+(or	(gold-amount < 225)
+	(wood-amount < 100))
+	(can-sell-commodity food)
+=>
+	(sell-commodity food)
+)
+#end-if
+#end-if
+#end-if
+
+(defrule
+(or	(up-timer-status 1 == timer-running)
+	(and	(game-time < 90)
+		(building-count <= 0)))
+=>
+	(up-jump-rule 4))
+(defrule
+	(true)
+=>
+	(up-full-reset-search)
+	(up-set-target-point gl-center-x)
+	(up-filter-distance c: 8 c: -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-filter-exclude -1 actionid-explore orderid-explore -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-clean-search search-local object-data-distance search-order-desc)
+	(up-remove-objects search-local object-data-index >= 4)
+	(up-reset-group c: 0)
+	(up-create-group 0 0 c: 0)
+	(up-get-group-size c: 0 gl-group-size)
+	(up-reset-filters)
+	(set-goal temp-goal 0)
+)
+(defrule
+	(up-compare-goal temp-goal g:< gl-group-size)
+=>
+	(up-set-target-object search-local g: temp-goal)
+	(up-get-point position-object gl-object-x)
+	(up-lerp-tiles gl-object-x gl-center-x c: -6)
+	(up-set-target-point gl-object-x)
+	(up-get-search-state gl-local-total)
+)
+(defrule
+	(up-compare-goal temp-goal g:< gl-group-size)
+	(up-point-terrain gl-object-x == TERRAIN_KILLER_FOG)
+=>
+	(up-reset-search 1 1 0 0)
+	(up-set-target-point gl-center-x)
+	(up-filter-distance c: 8 c: -1)
+	(up-filter-include cmdid-military -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-filter-include cmdid-monk -1 -1 -1)
+	(up-find-local c: all-units-class c: 240)
+	(up-target-point gl-center-x action-patrol -1 -1)
+	(enable-timer 1 9)
+	(up-jump-rule 1)
+)
+(defrule
+	(up-compare-goal temp-goal g:< gl-group-size)
+=>
+	(up-set-group search-local c: 0)
+	(up-modify-goal temp-goal c:+ 1)
+	(up-jump-rule -3)
+)
+
+(defrule
+	(game-time >= 2)
+	(up-timer-status 2 != timer-running)
+(or	(up-timer-status 1 == timer-running)
+	(up-timer-status 3 == timer-running))
+(or	(unit-type-count trebuchet-set >= 1)
+(or	(unit-type-count 913 >= 1)
+	(unit-type-count 935 >= 1)))
+=>
+	(up-full-reset-search)
+	(up-find-local c: 935 c: 10)
+	(up-find-local c: 954 c: 10)
+	(up-find-local c: 951 c: 10)
+	(up-find-local c: 913 c: 10)
+	(up-clean-search search-local object-data-pierce-armor search-order-desc)
+	(up-remove-objects search-local object-data-index >= 2)
+	(up-remove-objects search-local object-data-target != wall-class)
+	(up-set-target-object search-local c: 0)
+	(up-get-point position-object gl-object-x)
+	(up-set-target-point gl-object-x)
+	(up-filter-distance c: -1 c: 20)
+	(set-strategic-number sn-focus-player-number 0)
+	(up-find-remote c: wall-class c: 20)
+	(up-find-remote c: gate-class c: 20)
+	(up-clean-search search-remote object-data-distance search-order-asc)
+)
+(defrule
+	(up-set-target-object search-local c: 0)
+	(up-set-target-object search-remote c: 0)
+	(game-time >= 2)
+	(players-building-type-count every-enemy castle <= 0)
+	(up-timer-status 2 != timer-running)
+(or	(up-timer-status 1 == timer-running)
+	(up-timer-status 3 == timer-running))
+(or	(unit-type-count trebuchet-set >= 1)
+(or	(unit-type-count 913 >= 1)
+	(unit-type-count 935 >= 1)))
+=>
+	(set-strategic-number sn-wall-targeting-mode 1)
+	(up-target-objects 1 action-default -1 -1)
+	(enable-timer 2 8)
+)
+
+(defrule
+	(timer-triggered 1)
+	(up-timer-status 3 != timer-running)
+=>
+	(up-reset-unit c: -1)
+	(disable-timer 1)
+)
+(defrule
+	(timer-triggered 2)
+=>
+	(set-strategic-number sn-wall-targeting-mode 0)
+	(disable-timer 2)
+)
+(defrule
+	(timer-triggered 3)
+	(up-timer-status 1 != timer-running)
+=>
+	(up-reset-unit c: -1)
+	(disable-timer 3)
+)
+(defrule
+	(game-time >= 2)
+	(strategic-number sn-wall-targeting-mode == 1)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+	(game-time >= 2)
+	(strategic-number sn-wall-targeting-mode == 1)
+=>
+	(up-full-reset-search)
+	(up-set-target-point gl-center-x)
+	(up-filter-distance c: -1 c: 15)
+	(up-find-remote c: all-units-class c: 40)
+	(up-remove-objects search-remote object-data-type == 1654)
+	(up-get-search-state gl-local-total))
+(defrule
+	(game-time >= 2)
+	(up-compare-goal gl-remote-total <= 0)
+	(strategic-number sn-focus-player-number < 8)
+	(strategic-number sn-wall-targeting-mode == 1)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -2)
+)
+(defrule
+	(game-time >= 2)
+	(up-compare-goal gl-remote-total >= 1)
+	(strategic-number sn-wall-targeting-mode == 1)
+=>
+	(set-strategic-number sn-wall-targeting-mode 0)
+	(up-update-targets)
+	(up-jump-rule 1)
+)
+(defrule
+(or	(housing-headroom <= 0)
+(or	(unit-type-count battering-ram-line >= 1)
+(or	(unit-type-count bombard-cannon >= 1)
+(or	(unit-type-count trebuchet-set >= 1)
+(or	(unit-type-count mangonel-line >= 2)
+	(unit-type-count petard >= 1))))))
+=>
+	(set-strategic-number sn-wall-targeting-mode 1)
+)
+
+(defrule
+	(true)
+=>
+	(set-strategic-number sn-focus-player-number 1)
+)
+(defrule
+	(food-amount >= 1000)
+	(up-allied-resource-amount focus-player food < 225)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+=>
+	(tribute-to-player focus-player food 500)
+)
+(defrule
+	(wood-amount >= 1000)
+	(up-allied-resource-amount focus-player wood < 225)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+=>
+	(tribute-to-player focus-player wood 500)
+)
+(defrule
+	(gold-amount >= 1000)
+	(up-allied-resource-amount focus-player gold < 225)
+	(players-stance focus-player ally)
+	(player-in-game focus-player)
+=>
+	(tribute-to-player focus-player gold 500)
+)
+(defrule
+	(strategic-number sn-focus-player-number < 8)
+=>
+	(up-modify-sn sn-focus-player-number c:+ 1)
+	(up-jump-rule -4)
+)
+
+(defrule
+	(true)
+=>
+	(enable-timer 5 31)
+	(disable-self)
+)
+
+(defrule
+	(timer-triggered 5)
+=>
+	(disable-timer 5)
+	(enable-timer 5 31)
+)
